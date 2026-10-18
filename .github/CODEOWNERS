@@ -1,0 +1,4 @@
+# Хто затверджує зміни. Працює, коли в налаштуваннях гілки main увімкнено «Require review from Code Owners».
+*                      @vetaloffline
+/.claude-plugin/       @vetaloffline
+/plugins/my-toolkit/   @vetaloffline

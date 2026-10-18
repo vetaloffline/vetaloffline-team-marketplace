@@ -1,0 +1,19 @@
+{
+  "name": "vetaloffline-team",
+  "description": "Плагіни Claude Code від vetaloffline: запобіжники для git-процесу",
+  "owner": {
+    "name": "Vitaliy",
+    "email": "1990vetalb1990@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "my-toolkit",
+      "source": "./plugins/my-toolkit",
+      "description": "Хук guard-main.py (захист main/master) і /my-toolkit:guard-test",
+      "version": "1.0.0",
+      "category": "safety",
+      "tags": ["git", "guard", "hooks"],
+      "strict": true
+    }
+  ]
+}

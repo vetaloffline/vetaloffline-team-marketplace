@@ -1,0 +1,11 @@
+{
+  "name": "my-toolkit",
+  "version": "1.0.0",
+  "description": "Захист main/master: PreToolUse-хук guard-main.py (на main — тільки читання, pull і fetch; зміни — через гілку й PR) і /my-toolkit:guard-test, що проганяє його тести.",
+  "author": {
+    "name": "Vitaliy",
+    "email": "1990vetalb1990@gmail.com"
+  },
+  "repository": "https://github.com/vetaloffline/vetaloffline-team-marketplace",
+  "keywords": ["git", "guard", "hooks", "main-branch"]
+}

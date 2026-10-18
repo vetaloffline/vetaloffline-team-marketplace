@@ -1,0 +1,73 @@
+name: validate-plugins
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # Без Claude Code і без ключів: JSON, відповідність name/version, symlink.
+  static-validate:
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.list.outputs.plugins }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Статична перевірка
+        run: bash scripts/check-marketplace.sh
+      - name: Список плагінів для matrix
+        id: list
+        run: echo "plugins=$(jq -c '[.plugins[] | select(.source | type == "string") | .source]' .claude-plugin/marketplace.json)" >> "$GITHUB_OUTPUT"
+
+  # claude plugin validate не потребує входу чи ANTHROPIC_API_KEY.
+  plugin-validate:
+    needs: static-validate
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        plugin: ${{ fromJSON(needs.static-validate.outputs.plugins) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Встановити Claude Code
+        run: npm install -g @anthropic-ai/claude-code && claude --version
+      - name: Маркетплейс
+        run: claude plugin validate . --strict
+      - name: Плагін ${{ matrix.plugin }}
+        run: claude plugin validate "${{ matrix.plugin }}" --strict
+      - name: Тести плагіна (hooks/test-*.sh)
+        run: |
+          shopt -s nullglob
+          tests=("${{ matrix.plugin }}"/hooks/test-*.sh)
+          [ ${#tests[@]} -gt 0 ] || { echo "тестів нема"; exit 0; }
+          for t in "${tests[@]}"; do echo "== $t"; bash "$t"; done
+
+  # Необов'язково: запускає модель, тому потрібен секрет ANTHROPIC_API_KEY. Без секрету крок пропускається.
+  smoke-install:
+    needs: plugin-validate
+    runs-on: ubuntu-latest
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        if: env.ANTHROPIC_API_KEY != ''
+        with:
+          node-version: 22
+      - name: Плагін завантажується в сесію
+        if: env.ANTHROPIC_API_KEY != ''
+        run: |
+          npm install -g @anthropic-ai/claude-code
+          claude -p "Reply with one word: ready" --plugin-dir ./plugins/my-toolkit \
+            --output-format stream-json --verbose > out.jsonl
+          jq -e 'select(.type == "system" and .subtype == "init") | .plugins[] | select(.name == "my-toolkit")' out.jsonl
+      - name: Пропущено
+        if: env.ANTHROPIC_API_KEY == ''
+        run: echo "ANTHROPIC_API_KEY не задано — smoke-install пропущено"
