@@ -9,13 +9,13 @@ Breaking change → нова major-версія і секція `### Breaking` �
 
 #### Added
 
-- Плагін `sdlc` у маркетплейсі: форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2, код у
-  [vetaloffline/sdlc](https://github.com/vetaloffline/sdlc) (`plugin/`, джерело `git-subdir`).
+- Плагін `sdlc` у маркетплейсі: форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`)
+  справжніми файлами в `plugins/sdlc/`, з `LICENSE` автора.
 - `generate-data-model` читає `.claude/rules/migrations.md` проєкту на кожному запуску, і той переважує
   дефолти курсу (формат міграцій, PK, CHECK, аудит-колонки).
 - `implement-tasks` підтримує вкладені код-репо: гілка, тести, комміт — у репо, якому належать файли задачі;
   новий ключ `repos:` у `.claude/sdlc.local.md`.
-- Виправлені биті посилання в README і скілах; з шаблону PR прибраний підпис «Generated with Claude Code».
+- Виправлені посилання на файли; шаблон PR у `ship-feature` без підпису інструмента.
 
 ## my-toolkit
 

@@ -21,13 +21,8 @@
     },
     {
       "name": "sdlc",
-      "source": {
-        "source": "git-subdir",
-        "url": "https://github.com/vetaloffline/sdlc.git",
-        "path": "plugin",
-        "ref": "main"
-      },
-      "description": "Форк genkovich/sdlc 4.6.2: повний SDLC-пайплайн (interview → PRD → SAD/ADR → дані, API → задачі → TDD → ревʼю → реліз). Відмінності: generate-data-model слухає .claude/rules/migrations.md проєкту, implement-tasks працює з вкладеними код-репо",
+      "source": "./plugins/sdlc",
+      "description": "Форк genkovich/sdlc 4.6.2: SDLC-пайплайн від ідеї до релізу (interview → PRD → SAD/ADR → дані, API → задачі → TDD → ревʼю → реліз). generate-data-model слухає .claude/rules/migrations.md проєкту, implement-tasks працює з вкладеними код-репо",
       "version": "0.0.1",
       "category": "workflow",
       "tags": [
@@ -37,7 +32,6 @@
         "architecture",
         "tdd"
       ],
-      "license": "MIT",
       "strict": true
     }
   ]
