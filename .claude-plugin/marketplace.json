@@ -12,7 +12,27 @@
       "description": "Хуки guard-main.py (захист main/master) і guard-rm.py (захист від видалення), /my-toolkit:guard-test",
       "version": "1.1.0",
       "category": "safety",
-      "tags": ["git", "guard", "hooks", "rm"],
+      "tags": [
+        "git",
+        "guard",
+        "hooks",
+        "rm"
+      ],
+      "strict": true
+    },
+    {
+      "name": "sdlc",
+      "source": "./plugins/sdlc",
+      "description": "Форк genkovich/sdlc 4.6.2: SDLC-пайплайн від ідеї до релізу (interview → PRD → SAD/ADR → дані, API → задачі → TDD → ревʼю → реліз). generate-data-model слухає .claude/rules/migrations.md проєкту, implement-tasks працює з вкладеними код-репо",
+      "version": "0.0.1",
+      "category": "workflow",
+      "tags": [
+        "sdlc",
+        "prd",
+        "adr",
+        "architecture",
+        "tdd"
+      ],
       "strict": true
     }
   ]

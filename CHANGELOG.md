@@ -3,6 +3,20 @@
 Формат — [Keep a Changelog](https://keepachangelog.com/uk/1.1.0/), версії — [SemVer](https://semver.org/lang/uk/).
 Breaking change → нова major-версія і секція `### Breaking` першою.
 
+## sdlc
+
+### [0.0.1] — 2026-10-26
+
+#### Added
+
+- Плагін `sdlc` у маркетплейсі: форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`)
+  справжніми файлами в `plugins/sdlc/`, з `LICENSE` автора.
+- `generate-data-model` читає `.claude/rules/migrations.md` проєкту на кожному запуску, і той переважує
+  дефолти курсу (формат міграцій, PK, CHECK, аудит-колонки).
+- `implement-tasks` підтримує вкладені код-репо: гілка, тести, комміт — у репо, якому належать файли задачі;
+  новий ключ `repos:` у `.claude/sdlc.local.md`.
+- Виправлені посилання на файли; шаблон PR у `ship-feature` без підпису інструмента.
+
 ## my-toolkit
 
 ### [1.1.0] — 2026-10-26
