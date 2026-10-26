@@ -2,7 +2,20 @@
 
 Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`), версія `0.0.1`.
 Ліцензія MIT, копірайт автора — у [LICENSE](LICENSE). Назва плагіна (`sdlc`), агенти (`sdlc:<agent>`)
-і дефолти — як в оригіналі. Відмінності:
+і дефолти — як в оригіналі.
+
+## Install
+
+```bash
+claude plugin marketplace add vetaloffline/vetaloffline-team-marketplace
+claude plugin install sdlc@vetaloffline-team
+```
+
+У сесії Claude Code: `/plugin install sdlc --marketplace vetaloffline/vetaloffline-team-marketplace`.
+Перевірити: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`. Якщо встановлений
+оригінальний `sdlc@sdlc`, вимкни його: обидва дають ті самі `sdlc:*` скіли й агенти.
+
+## Відмінності від оригіналу
 
 - `generate-data-model` читає `.claude/rules/migrations.md` проєкту на кожному запуску; файл переважує
   дефолти курсу (формат міграцій, PK, аудит-колонки, CHECK/TRIGGER, видалення, сіди).
