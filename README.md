@@ -40,7 +40,7 @@ claude plugin marketplace add vetaloffline/vetaloffline-team-marketplace --scope
 | Плагін | Версія | Що робить | Деталі |
 |---|---|---|---|
 | `my-toolkit` | 1.0.0 | PreToolUse-хук `guard-main.py`: на `main`/`master` тільки читання, `pull`, `fetch`; зміни — через гілку й PR. Skill `/my-toolkit:guard-test` проганяє тести хука | [plugins/my-toolkit/README.md](plugins/my-toolkit/README.md) |
-| `sdlc` | 4.6.2-vet.1 | Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2: SDLC-пайплайн від ідеї до релізу (PRD, SAD, ADR, дані, API, задачі, TDD, ревʼю). Скіли слухають `.claude/rules/` проєкту і вміють працювати з вкладеними код-репо. Код — у [vetaloffline/sdlc](https://github.com/vetaloffline/sdlc) (`plugin/`) | [vetaloffline/sdlc](https://github.com/vetaloffline/sdlc#fork-notes) |
+| `sdlc` | 0.0.1 | Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2: SDLC-пайплайн від ідеї до релізу (PRD, SAD, ADR, дані, API, задачі, TDD, ревʼю). Скіли слухають `.claude/rules/` проєкту і вміють працювати з вкладеними код-репо. Код — у [vetaloffline/sdlc](https://github.com/vetaloffline/sdlc) (`plugin/`) | [vetaloffline/sdlc](https://github.com/vetaloffline/sdlc#fork-notes) |
 
 ## Супровідники
 
