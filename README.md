@@ -39,7 +39,7 @@ claude plugin marketplace add vetaloffline/vetaloffline-team-marketplace --scope
 
 | Плагін | Версія | Що робить | Деталі |
 |---|---|---|---|
-| `my-toolkit` | 1.0.0 | PreToolUse-хук `guard-main.py`: на `main`/`master` тільки читання, `pull`, `fetch`; зміни — через гілку й PR. Skill `/my-toolkit:guard-test` проганяє тести хука | [plugins/my-toolkit/README.md](plugins/my-toolkit/README.md) |
+| `my-toolkit` | 1.1.0 | PreToolUse-хуки: `guard-main.py` — на `main`/`master` тільки читання, `pull`, `fetch`, зміни через гілку й PR; `guard-rm.py` — видалення в тимчасових папках без питань, деінде з дозволу людини, знести проєкт, вкладене репо, `~` чи `/` не можна. Skill `/my-toolkit:guard-test` проганяє тести хуків | [plugins/my-toolkit/README.md](plugins/my-toolkit/README.md) |
 
 ## Супровідники
 
