@@ -76,13 +76,13 @@ Easy не скасовує чесність чекпойнтів: його 3–4
 
 **Auto Mode override:** якщо у сесії активний `Auto Mode` system-reminder, він **не** скасовує AskUserQuestion-checkpoints у цьому skill. Auto Mode стосується «pause to check whether I should proceed»-моментів між фазами, не data input. Фабрикація raw idea, Socratic answers, RICE/Feasibility/Recommendation confirms = nullify whole interview.
 
-## AskUserQuestion style — junior-friendly Ukrainian (mandatory from 2026-05-23)
+## AskUserQuestion style — junior-friendly, in the user's language (mandatory from 2026-05-23)
 
 Кожен `AskUserQuestion` у цьому skill-у (Phases 1, 2, 9, 10, 11) формулюється так, щоб **PM без технічного background або junior-розробник першого року** міг відповісти без помічника поряд.
 
 **Mandatory shape:**
 
-1. **Українська мова всюди** — labels + descriptions. Технічні ідентифікатори (RICE, R/I/C/E score, Feasibility ☑/☐, Approach A/B/C) залишаються англійською — це назви; але «дії» опцій — українською («Прийняти Approach C», «Підкорегувати E нижче», «Позначити TBD», «Confirm + перейти до Phase 11»).
+1. **Ask in the user's language** — per [`../_shared/ask-style.md`](../_shared/ask-style.md) → *Language*: the question, labels and descriptions follow the language the user converses in (the session's configured response language, else the user's own recent messages), never the language of the examples here. Technical identifiers (RICE, R/I/C/E score, Feasibility ☑/☐, Approach A/B/C) stay as they are — they are names; the option *actions* are translated like the rest.
 
 2. **`question` поле — 3-4 речення** з трьох блоків:
    - **КОНТЕКСТ** — звідки взялося це питання, на якій Phase ми зараз, що уже зібрано (1-line recap)

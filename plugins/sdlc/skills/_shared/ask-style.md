@@ -1,4 +1,4 @@
-# Ask-style — junior-friendly bilingual `AskUserQuestion`
+# Ask-style — junior-friendly `AskUserQuestion` in the user's language
 
 > **Reference-only.** Not a skill. Every skill that calls `AskUserQuestion` reads this for the
 > canonical shape of questions and options. The rule: an **option label is the next mechanical
@@ -26,7 +26,7 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
   - **WHY IT MATTERS** — which quality goal / NFR / PRD vector it touches; reversibility (irreversible? multi-module? affects performance / security / UX?); the main trade-off in play.
   - **READ OPTIONS** — a nudge to read the descriptions before choosing.
 - **Each option**:
-  - `label` — 1–5 words, **action form** = the next mechanical step: «Прийняти», «Виправити», «Винести у відкрите питання», «Викинути», «Зафіксувати як ADR». Add «(Recommended)» to the first option when you recommend it.
+  - `label` — 1–5 words, **action form** = the next mechanical step: "Accept", "Fix", "Move to open question", "Discard", "Record as ADR". Add "(Recommended)" to the first option when you recommend it.
   - `description` — 3–5 sentences with four mandatory elements (below).
 
 ## The four mandatory elements of a `description`
@@ -41,12 +41,13 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
 
 ## Language
 
-- **Ukrainian throughout** — labels + descriptions. Technical identifiers stay in their original form (ADR, JSONB, JWT, UUID, FK, OpenAPI) — they are names. The *actions* are Ukrainian («Прийняти», «Відредагувати», «Винести у §11 OQ», «Видалити»).
+- **Ask in the user's language, not the examples' language.** The question, every label, every description and the "Sources" line are written in the language the user converses in: the session's configured response language if the harness sets one, otherwise the language of the user's own recent messages. The skill files and every example in them are in English as reference only — translate them at ask time; never copy an example's language, and never switch language because an artifact (PRD, SAD) happens to be written in another one.
+- Technical identifiers stay in their original form (ADR, JSONB, JWT, UUID, FK, OpenAPI, US-NN, AC-NN) — they are names. The *actions* (labels) are translated like the rest.
 - Glossary roles and domain-invariant **names** (natural-language phrases like «no published lessons») are allowed — they are business terms.
 
 ## Forbidden
 
-- Terse English labels («Approve», «Edit», «Drop», «Reword»).
+- Terse labels («Approve», «Edit», «Drop», «Reword») — in any language.
 - One-line descriptions.
 - Technical terms without a gloss (UNION, backfill, GIN, cursor, idempotent, transactional…).
 - Trade-offs hidden in a follow-up («if you pick this I'll later ask about X, which has complexity Y»).
@@ -59,21 +60,21 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
   description: "Apply decision."
 
 # DO — action-form label, description names the concrete step + glossed trade-off
-- label: "Прийняти JSONB-колонку (→ spawn ADR-0002)"
-  description: "Одна колонка `body` типу jsonb зберігає весь масив блоків як JSON. ПЛЮСИ: редагування уроку одним UPDATE; новий тип блоку не потребує schema-migration. МІНУСИ: валідація блоків лягає на app-layer (БД не знає типів); пошук всередині body потребує GIN-індексу (спеціальний індекс Postgres для пошуку в JSON — у 3–5× більше місця, повільніший запис). НАСЛІДОК: спавню ADR-0002 з 3 розглянутими варіантами, додаю рядок у §9, схема фіксується для stage data-model."
+- label: "Accept the JSONB column (→ spawn ADR-0002)"
+  description: "One `body` column of type jsonb stores the whole array of blocks as JSON. PROS: editing a lesson is a single UPDATE; a new block type needs no schema migration. CONS: block validation moves to the app layer (the DB doesn't know the types); searching inside body needs a GIN index (a special Postgres index for searching inside JSON — 3–5× more space, slower writes). NEXT: I spawn ADR-0002 with the 3 options considered, add a row to §9, and the schema is locked for the data-model stage."
 ```
 
 ## The 4-state actions, phrased this way (canonical set)
 
 ```
-- label: "Прийняти як є"
-  description: "Лишаю рішення дослівно, запускаю наступну перевірку (gate, якщо є для цієї секції)."
-- label: "Виправити"
-  description: "Ти даєш нове формулювання/значення; я регенерую рішення під нову умову і питаю ще раз (один раунд — друга відповідь фінальна)."
-- label: "Винести у відкрите питання"
-  description: "Прибираю рішення з секції і додаю рядок у таблицю Open-Questions з owner+due (питаю наступним кроком). Без обох — рішення стає Drop."
-- label: "Викинути"
-  description: "Прибираю рішення. Якщо воно обов'язкове — переформулюю опції і питаю ще раз; якщо опціональне — лишаю без заміни."
+- label: "Accept as is"
+  description: "I keep the decision verbatim and run the next check (the gate, if this section has one)."
+- label: "Fix"
+  description: "You give the new wording/value; I regenerate the decision under the new constraint and ask once more (one round — the second answer is final)."
+- label: "Move to open question"
+  description: "I take the decision out of the section and add a row to the Open-Questions table with owner + due (asked next). Without both, the decision becomes Drop."
+- label: "Discard"
+  description: "I remove the decision. If it is mandatory, I reframe the options and ask once more; if optional, I leave it out with no replacement."
 ```
 
 ## Review of a derived artifact (diagrams, inventories, coverage rows)
@@ -143,4 +144,6 @@ The dry version is unanswerable without knowing what RICE is; the explanatory ve
 
 ## Why (feedback, 2026-05-23 + reinforced 2026-05-29)
 
-The user is a PM, methodist, or junior dev opening the repo for the first time. Terse English questions give them neither the substance of the decision nor the difference between options. Verbatim (2026-05-23): «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці». Reinforced (2026-05-29): «при опитуваннях треба більш explanatory запитання і варіанти відповідей, бо зараз клод доволі сухо опитує і багато термінів на короткий текст» — i.e. the dryness + term-density was still happening, so this file now leads with the "never ask dryly / gloss every term" rule above.
+The user is a PM, methodist, or junior dev opening the repo for the first time. Terse questions give them neither the substance of the decision nor the difference between options. Feedback (2026-05-23, translated): "the explanations must be even clearer, for people who are literally juniors in development". Reinforced (2026-05-29, translated): "questions and answer options need to be more explanatory — right now Claude asks rather dryly and packs many terms into short text" — i.e. the dryness + term-density was still happening, so this file now leads with the "never ask dryly / gloss every term" rule above.
+
+The language rule (2026-10-27): the plugin is described in English, and Claude translates every question into the language the user speaks — the examples' language must never decide it.

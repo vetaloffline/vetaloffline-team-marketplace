@@ -20,6 +20,10 @@ Breaking change → нова major-версія і секція `### Breaking` �
 - `_shared/diagram-presentation.md`: питання-підтвердження діаграми — опис прозою + рядок «Джерела: …»,
   сформульоване як рев'ю. `_shared/ask-style.md`: нова секція «Review of a derived artifact» з канонічним
   набором опцій рев'ю.
+- Мова питань: замість «Ukrainian throughout» `AskUserQuestion` ставиться мовою, якою говорить користувач
+  (мова відповідей сесії, інакше мова його повідомлень). Скіли й приклади описані англійською, Claude
+  перекладає їх під час питання. Правило в `_shared/ask-style.md` → *Language*; `interview`, `write-prd` і
+  `architecture-design` посилаються на нього. `ask-style.md` повністю англійською.
 
 ### [0.0.1] — 2026-10-26
 

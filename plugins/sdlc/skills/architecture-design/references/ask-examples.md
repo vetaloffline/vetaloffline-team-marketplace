@@ -270,13 +270,13 @@ Options:
     description: "Skill removes decision. If mandatory, re-asks with reframed options once; if optional, leaves it out."
 ```
 
-## Junior-friendly Ukrainian explanations (mandatory from 2026-05-23)
+## Junior-friendly explanations in the user's language (mandatory from 2026-05-23)
 
 Every `AskUserQuestion` у цьому skill-у формулюється так, щоб **junior-розробник першого року** міг зрозуміти суть рішення, різницю між опціями і наслідки кожної — без помічника поряд. Старий шаблон («1-line WHY», 5-word labels) deprecated для Step 6 + Step 7.
 
 ### Mandatory shape
 
-1. **Українська мова всюди** — labels + descriptions. Технічні ідентифікатори (ADR, JSONB, JWT, UUID, FK, GIN) залишаються англійською — це назви; але «дії» опцій — українською («Прийняти», «Відредагувати», «Перенести у §11 OQ», «Видалити»).
+1. **Ask in the user's language** — per [`../../_shared/ask-style.md`](../../_shared/ask-style.md) → *Language*: the question, labels and descriptions follow the language the user converses in (the session's configured response language, else the user's own recent messages), never the language of the examples here. Technical identifiers (ADR, JSONB, JWT, UUID, FK, GIN) stay as they are — they are names; the option *actions* are translated like the rest.
 
 2. **`question` поле — 3-4 речення** з трьох блоків:
    - **КОНТЕКСТ** — чому це питання, який сценарій уявляти, що саме ми вирішуємо (в одному реченні з прикладом)

@@ -163,13 +163,13 @@ Options:
     description: "Skill deletes the item and renumbers later items."
 ```
 
-## Junior-friendly Ukrainian explanations (mandatory from 2026-05-23)
+## Junior-friendly explanations in the user's language (mandatory from 2026-05-23)
 
 Every `AskUserQuestion` у цьому skill-у формулюється так, щоб **junior-розробник або PM без технічного background** міг зрозуміти суть кожного PRD-item (US / AC / NFR / KPI), різницю між опціями і наслідки вибору — без помічника поряд. Старий шаблон («1-sentence framing», 4-word labels) deprecated.
 
 ### Mandatory shape
 
-1. **Українська мова всюди** — labels + descriptions. Технічні ідентифікатори (US-NN, AC-NN, NFR, KPI, GWT, AsyncAPI, OpenAPI) залишаються англійською — це назви; але «дії» опцій — українською («Прийняти як є», «Переписати», «Перенести у §8 OQ», «Видалити», «Додати ще один AC»).
+1. **Ask in the user's language** — per [`../../_shared/ask-style.md`](../../_shared/ask-style.md) → *Language*: the question, labels and descriptions follow the language the user converses in (the session's configured response language, else the user's own recent messages), never the language of the examples here. Technical identifiers (US-NN, AC-NN, NFR, KPI, GWT, AsyncAPI, OpenAPI) stay as they are — they are names; the option *actions* are translated like the rest.
 
 2. **`question` поле — 3-4 речення** з трьох блоків:
    - **ПОВНИЙ ТЕКСТ item-у** verbatim (US text, AC GWT, NFR row, KPI line, critic finding) — як було

@@ -89,6 +89,6 @@ PM + Tech Lead (co-authors). PM drives goals / non-goals / KPIs; Tech Lead drive
 - [`./references/draft-generation.md`](./references/draft-generation.md) — per-section sources, 5 AC coverage types, stack-agnostic forbidden tokens.
 - [`./references/socratic-loop.md`](./references/socratic-loop.md) — write-prd's delta over the shared Socratic loop (sections walked, use-case floor, decision-types).
 - [`./references/critic.md`](./references/critic.md) — write-prd's delta over the shared critic (F5 structural floor + F6 forbidden-token specialization).
-- [`./references/ask-examples.md`](./references/ask-examples.md) — explanatory `AskUserQuestion` shape for US / AC / NFR / KPI + critic-finding examples (junior-friendly Ukrainian).
+- [`./references/ask-examples.md`](./references/ask-examples.md) — explanatory `AskUserQuestion` shape for US / AC / NFR / KPI + critic-finding examples (junior-friendly, asked in the user's language).
 - [`./references/checklist.md`](./references/checklist.md) — Definition of Done + full anti-patterns.
 - [`./templates/PRD-template.md`](./templates/PRD-template.md) — output scaffold; inline `<!-- Skill instruction: ... -->` comments are the per-section generation contract.
