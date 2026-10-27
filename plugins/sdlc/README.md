@@ -1,6 +1,6 @@
 # sdlc — форк у маркетплейсі vetaloffline-team
 
-Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`), версія `0.0.1`.
+Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`), версія `0.0.2`.
 Ліцензія MIT, копірайт автора — у [LICENSE](LICENSE). Назва плагіна (`sdlc`), агенти (`sdlc:<agent>`)
 і дефолти — як в оригіналі.
 
