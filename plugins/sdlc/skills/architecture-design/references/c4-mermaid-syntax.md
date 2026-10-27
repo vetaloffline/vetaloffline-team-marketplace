@@ -1,21 +1,21 @@
 # C4 Mermaid syntax — quick reference for sad.md §3 and §5
 
-## TL;DR — як читати C4-діаграму (короткий вступ українською)
+## TL;DR — how to read a C4 diagram (short intro)
 
-C4 — це 4 рівні архітектурних діаграм як zoom на Google Maps:
+C4 is 4 levels of architecture diagrams, like zoom levels on Google Maps:
 
-- **L1 Context** — система як чорний ящик + користувачі + зовнішні системи. **Це §3 SAD.**
-- **L2 Container** — внутрішня декомпозиція: модулі, сервіси, БД, черги. **Це §5 SAD.**
-- L3 Component, L4 Code — поза межами цього skill.
+- **L1 Context** — the system as a black box + users + external systems. **This is SAD §3.**
+- **L2 Container** — the internal decomposition: modules, services, DBs, queues. **This is SAD §5.**
+- L3 Component, L4 Code — out of scope for this skill.
 
-**Як читати елементи на діаграмі:**
-- `Person(...)` — внутрішній актор (наш користувач). `Person_Ext(...)` — зовнішній (наприклад, HR-департамент).
-- `System(...)` — наша система. `System_Ext(...)` — зовнішня (Sentry, відео-провайдер).
-- `Container(...)` — компонент всередині нашої системи (фронт, бек, worker).
-- `ContainerDb(...)` — наша БД. `Container_Boundary(...)` — рамка навколо групи контейнерів (тобто «це деплоїться разом»).
-- `Rel(від, до, "що робить", "як")` — стрілка з лейблом і протоколом (HTTPS / gRPC / SQL).
+**How to read the elements on a diagram:**
+- `Person(...)` — an internal actor (our user). `Person_Ext(...)` — an external one (e.g. the HR department).
+- `System(...)` — our system. `System_Ext(...)` — an external one (Sentry, a video provider).
+- `Container(...)` — a component inside our system (frontend, backend, worker).
+- `ContainerDb(...)` — our DB. `Container_Boundary(...)` — a frame around a group of containers (i.e. «this is deployed together»).
+- `Rel(from, to, "what it does", "how")` — an arrow with a label and a protocol (HTTPS / gRPC / SQL).
 
-**Правило тлумачення:** *кордон довіри* (англ. *trust boundary*) — лінія, за якою ти більше не довіряєш даним без перевірки. На L1 — це межа між «нашими» акторами і зовнішніми системами; на L2 — межа `Container_Boundary` (наш моноліт vs зовнішні бази).
+**Interpretation rule:** a *trust boundary* is the line past which you no longer trust data without checking it. On L1 it is the border between «our» actors and external systems; on L2 it is the `Container_Boundary` (our monolith vs external databases).
 
 ---
 

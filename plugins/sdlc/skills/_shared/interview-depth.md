@@ -6,15 +6,15 @@
 > diagram is confirmed per-item or written-and-summarized. It does **not** tune *completeness*:
 > every acceptance criterion is still covered at every level (see the coverage floor below).
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-«Депт-діал» — один регулятор на запуск скіла: **easy / medium / hard**.
+The «depth dial» is one regulator per skill run: **easy / medium / hard**.
 
-- **easy** — скіл сам ухвалює більшість рішень із розумними дефолтами, питає тільки незворотні / високоризикові, і **виписує припущення, які зробив**, щоб ти міг їх ветувати. Менше аналізу, діаграми пишуться + один підсумок (без поштучного питання).
-- **medium** — поточний збалансований сократичний прохід (дефолт).
-- **hard** — проходимо **кожне** рішення; кожне `AskUserQuestion` виводить trade-off на передній план; повний набір ідейних аналізів (research / approaches / perspectives / devil's-advocate); кожна діаграма підтверджується прозою; edge-cases копаємо глибше.
+- **easy** — the skill makes most decisions itself with sensible defaults, asks only the irreversible / high-risk ones, and **writes down the assumptions it made** so you can veto them. Less analysis; diagrams are written + one summary (no per-diagram question).
+- **medium** — the current balanced Socratic pass (default).
+- **hard** — we walk **every** decision; every `AskUserQuestion` puts the trade-off up front; the full set of ideation analyses (research / approaches / perspectives / devil's-advocate); every diagram is confirmed in prose; edge cases are dug deeper.
 
-Повнота (покриття кожного AC) **не залежить** від рівня — easy теж покриває всі AC, просто менше питає *як саме*.
+Completeness (covering every AC) **does not depend** on the level — easy also covers every AC, it just asks less about *how exactly*.
 
 ---
 

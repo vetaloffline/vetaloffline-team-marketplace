@@ -1,18 +1,18 @@
 # Draft generation — per-section contract for architecture-design Protocol step 5
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Це крок 5 у Protocol — як skill робить **чорновик у памʼяті** перед тим, як питати користувача (крок 6) і писати на диск (крок 6e).
+This is step 5 of the Protocol — how the skill makes an **in-memory draft** before asking the user (step 6) and writing to disk (step 6e).
 
-На кожну з 12 секцій Arc42 skill:
+For each of the 12 Arc42 sections the skill:
 
-1. Бере джерела у пріоритеті: CONTEXT.md → PRD.md → architecture-map.md (або scan через `sdlc:explorer`) → попередні рішення.
-2. Тягне з **item-bank** (бібліотеки готових варіантів) — наприклад, для §4 це «sync HTTP / async via outbox / sync через спільну БД».
-3. Прогоняє **pre-Socratic hygiene** (попередні перевірки чистоти): чи актори з CONTEXT, чи числа з PRD §6 NFR, чи всі Mermaid-блоки використовують реальні імена.
+1. Takes sources in priority order: CONTEXT.md → PRD.md → architecture-map.md (or a scan via `sdlc:explorer`) → earlier decisions.
+2. Pulls from the **item-bank** (a library of ready options) — e.g. for §4 that is «sync HTTP / async via outbox / sync via a shared DB».
+3. Runs **pre-Socratic hygiene** (preliminary cleanliness checks): are the actors from CONTEXT, are the numbers from PRD §6 NFR, do all Mermaid blocks use real names.
 
-Глосарій:
-- *item-bank* — бібліотека типових варіантів для секції (skill підказує, які опції найчастіше зустрічаються).
-- *pre-Socratic hygiene* — фінальні перевірки до того, як питати користувача: щоб не питати про те, що вже зафіксовано у CONTEXT/CLAUDE.md.
+Glossary:
+- *item-bank* — a library of typical options for a section (the skill suggests which options come up most often).
+- *pre-Socratic hygiene* — final checks before asking the user, so it doesn't ask about what is already fixed in CONTEXT/CLAUDE.md.
 
 ---
 

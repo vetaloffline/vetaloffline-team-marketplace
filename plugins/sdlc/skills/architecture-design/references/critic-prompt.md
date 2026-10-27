@@ -1,23 +1,23 @@
 # Critic Sub-Agent Prompt — Step 7 of `sdlc:architecture-design`
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Це канонічний prompt для subagent-критика. Skill читає цей файл, підставляє 6 placeholder-ів (`{{SAD_DRAFT}}`, `{{EDITS_LOG}}` тощо) і запускає Agent.
+This is the canonical prompt for the critic subagent. The skill reads this file, fills in 6 placeholders (`{{SAD_DRAFT}}`, `{{EDITS_LOG}}`, etc.) and runs the Agent.
 
-Критик шукає **6 класів проблем** (UA-короткі підзаголовки):
+The critic looks for **6 classes of problems** (short subheadings):
 
-- **F1 — стратегічна нитка зривається** (§4 vs §6/§10)
-- **F2 — обсяг функції розповз** (M став L)
-- **F3 — відклали те, що PRD назвав ключовим** (decision dropped/deferred vs PRD §6 NFR)
-- **F4 — тихі правки після Socratic** (текст ≠ те, що користувач підтвердив)
-- **F5 — структурні дірки** (Mermaid-шаблони, ADR-сироти, порожні секції)
-- **F6 — протиріччя зі стеком або PRD** (числа у §10 не з PRD; страшмен у ADR options; §2 ламає CLAUDE.md)
+- **F1 — the strategic thread breaks** (§4 vs §6/§10)
+- **F2 — the feature's scope crept** (M became L)
+- **F3 — deferred what the PRD called key** (decision dropped/deferred vs PRD §6 NFR)
+- **F4 — silent edits after the Socratic walk** (text ≠ what the user confirmed)
+- **F5 — structural holes** (Mermaid templates, orphan ADRs, empty sections)
+- **F6 — contradicts the stack or the PRD** (numbers in §10 not from the PRD; a straw man among ADR options; §2 breaks CLAUDE.md)
 
-Принципи:
-- НЕ пропонувати нові ідеї (критик — про послідовність, не про візію).
-- НЕ оскаржувати Approved-рішення без причини.
-- ≤7 знахідок, кожна з цитатою sad-§ + PRD-§/CONTEXT/ADR.
-- Цитати обовʼязкові — без них знахідка не зараховується.
+Principles:
+- Do NOT propose new ideas (the critic is about consistency, not vision).
+- Do NOT challenge Approved decisions without a reason.
+- ≤7 findings, each with a quote from a sad § + PRD §/CONTEXT/ADR.
+- Quotes are mandatory — a finding without them doesn't count.
 
 ---
 

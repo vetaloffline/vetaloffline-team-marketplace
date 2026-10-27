@@ -1,17 +1,17 @@
 # architecture-design Self-check + Anti-patterns
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Це **повний чеклист завершення** (англ. *Definition of Done*) — список того, що skill має перевірити перед фінальним комітом.
+This is the **full completion checklist** (*Definition of Done*) — the list of what the skill must check before the final commit.
 
-Як читати розміри функцій (size class):
-- **XS** — функція на дні (1-2 інженери, 1 тиждень).
-- **S** — на тиждень-два (1-3 інженери, 2-3 тижні).
-- **M** — на місяць (2-5 інженерів, 3-5 тижнів). Типова функція курсу.
-- **L** — на квартал (4-8 інженерів, 6-12 тижнів).
-- **XL** — на квартал+ з 2+ команд.
+How to read feature sizes (size class):
+- **XS** — a day-sized feature (1-2 engineers, 1 week).
+- **S** — a week or two (1-3 engineers, 2-3 weeks).
+- **M** — a month (2-5 engineers, 3-5 weeks). A typical course feature.
+- **L** — a quarter (4-8 engineers, 6-12 weeks).
+- **XL** — a quarter+ across 2+ teams.
 
-Очікувана кількість ADR залежить від розміру: XS/S → 2-4, M → 5-12, L/XL → 10-15.
+The expected number of ADRs depends on size: XS/S → 2-4, M → 5-12, L/XL → 10-15.
 
 ---
 

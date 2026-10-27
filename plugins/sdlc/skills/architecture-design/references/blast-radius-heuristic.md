@@ -1,16 +1,16 @@
 # Blast-radius heuristic — when an architectural decision becomes ADR-worthy
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-**Blast radius** перекладаємо як **«масштаб удару»** — наскільки боляче буде передумати рішення через 3 місяці. Три критерії:
+**Blast radius** means how painful it will be to change the decision 3 months from now. Three criteria:
 
-1. **Чи переробка займе ≥3 днів?** (Незворотнє.)
-2. **Чи це бачать ≥2 модулі?** (Зачіпає кілька модулів.)
-3. **Чи є чесна альтернатива?** (Не «вибір серед однакових бібліотек»; не «вибір, виключений обмеженням стеку».)
+1. **Would the rework take ≥3 days?** (Irreversible.)
+2. **Do ≥2 modules see it?** (Touches several modules.)
+3. **Is there an honest alternative?** (Not «a pick among equivalent libraries»; not «a choice ruled out by a stack constraint».)
 
-Якщо хоч 2 з 3 → ADR. Якщо 0 — inline у sad.md. Очікувана кількість ADR на функцію розміру M — 5-12.
+If at least 2 of 3 → ADR. If 0 → inline in sad.md. The expected number of ADRs for an M-sized feature is 5-12.
 
-Канонічний приклад: ADR-0001 «Зберігати урок як таблицю блоків різних типів» з `course-lesson-mvp` — 3 з 3 → ADR.
+Canonical example: ADR-0001 «Store a lesson as a table of blocks of different types» from `course-lesson-mvp` — 3 of 3 → ADR.
 
 ---
 
@@ -25,16 +25,16 @@ A decision crosses the threshold if it scores **2 of 3** (a single criterion = b
 > If we picked a different option three months from now, would the rework take ≥3 days?
 
 Examples that **fire** this criterion:
-- **Storage choice** (вибір сховища: реляційна БД як Postgres, документна БД як Mongo, файлове сховище як S3 + DynamoDB) — переробка займає тижні через міграцію даних.
-- **Synchronous vs asynchronous module coupling** (синхронний виклик одного модуля до іншого vs обмін через події у фоні) — змінює форму даних і модель збоїв.
-- **ID strategy** (UUID v4 — випадковий; UUID v7 — час+випадковий, сортується; ULID — теж сортований; auto-increment INT) — переробка потребує *backfill* (скрипт, який пробігає всі існуючі записи і дописує нові ID).
-- **Auth model** (сесії з cookie; JWT-токени; per-request tokens — кожен запит несе власний токен) — змінює форму всіх запитів.
-- **Sharding key** (ключ, за яким дані розкидаються по серверах БД) — змінити пізніше = переписати всю кластеризацію.
+- **Storage choice** (relational DB like Postgres, document DB like Mongo, file storage like S3 + DynamoDB) — rework takes weeks because of the data migration.
+- **Synchronous vs asynchronous module coupling** (one module calling another synchronously vs exchanging events in the background) — changes the shape of the data and the failure model.
+- **ID strategy** (UUID v4 — random; UUID v7 — time+random, sortable; ULID — also sortable; auto-increment INT) — rework needs a *backfill* (a script that walks every existing row and writes the new IDs).
+- **Auth model** (cookie sessions; JWT tokens; per-request tokens — each request carries its own token) — changes the shape of every request.
+- **Sharding key** (the key by which data is spread across DB servers) — changing it later = rewriting the whole clustering.
 
 Examples that **don't fire**:
-- **Library choice within the same language** — наприклад, `slog` vs `zerolog` (обидві — структурне логування для Go). Переробка = search-and-replace, кілька годин.
-- **Configuration value** (значення налаштування) — таймаут 5 с проти 10 с. Один PR.
-- **Naming** (перейменування полів) — `Goal.objective` vs `Goal.title`. IDE робить це за хвилину.
+- **Library choice within the same language** — e.g. `slog` vs `zerolog` (both are structured logging for Go). Rework = search-and-replace, a few hours.
+- **Configuration value** — a 5 s timeout vs 10 s. One PR.
+- **Naming** (renaming fields) — `Goal.objective` vs `Goal.title`. The IDE does it in a minute.
 
 ### 2. Multi-module impact
 

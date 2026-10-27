@@ -2,38 +2,38 @@
 
 ## Scenario
 
-Full intake flow на rate-limiting feature. Очікується що skill пройде §A interview → §B inline CONTEXT (для «tenant») → §C brainstorm → §D MP-check (PASS) → §E ADR stub.
+Full intake flow on a rate-limiting feature. The skill is expected to go §A interview → §B inline CONTEXT (for «tenant») → §C brainstorm → §D MP-check (PASS) → §E ADR stub.
 
 ## Pre-existing
 
-(Нічого — clean start.)
+(Nothing — clean start.)
 
 ## User input
 
 ```
 /sdlc-intake rate-limiting-per-user
 
-Контекст: 3 клієнти за тиждень поскаржилися на 429 від інших користувачів.
-Один користувач шле 10k req/min і кладе rate limit на всіх. Клієнти — B2B
-на shared infra, contract обіцяє per-tenant SLA.
+Context: 3 customers complained this week about 429s caused by other users.
+One user sends 10k req/min and takes the rate limit down for everyone. Customers are B2B
+on shared infra; the contract promises a per-tenant SLA.
 
-Розмір: S (один тиждень, 2-5 PRs).
+Size: S (one week, 2-5 PRs).
 
-Domain hint: ми оперуємо «tenant» (billable customer org з 1+ users —
-NOT user). У brainstorm розглянь: Redis token bucket vs Nginx limit_req_zone
-vs Envoy ratelimit (3 finalists). Recommendation очікую — Redis token bucket
-(Redis уже є, бібліотека зріла).
+Domain hint: we operate on «tenant» (a billable customer org with 1+ users —
+NOT user). In the brainstorm consider: Redis token bucket vs Nginx limit_req_zone
+vs Envoy ratelimit (3 finalists). I expect the recommendation to be Redis token bucket
+(Redis is already there, the library is mature).
 ```
 
 ## Expected behavior
 
-- §A: створює `delivery/rate-limiting-per-user/idea-brief.md` з Problem/Users/Why now/Out of scope/Size (S)/Competitors (Kong, Tyk, AWS API Gateway)/RICE (~240)/Feasibility (3/3).
-- §B: під час §A зустрічає «tenant» → проактивно пропонує `sdlc:fix-term tenant`. Skill створює root `CONTEXT.md` з `tenant — billable customer org з 1+ users. NOT user.`
-- §C: створює `brainstorm.md` з 5-7 approaches, 3 finalists, recommendation = Redis token bucket.
+- §A: creates `delivery/rate-limiting-per-user/idea-brief.md` with Problem/Users/Why now/Out of scope/Size (S)/Competitors (Kong, Tyk, AWS API Gateway)/RICE (~240)/Feasibility (3/3).
+- §B: during §A meets «tenant» → proactively proposes `sdlc:fix-term tenant`. The skill creates the root `CONTEXT.md` with `tenant — billable customer org with 1+ users. NOT user.`
+- §C: creates `brainstorm.md` with 5-7 approaches, 3 finalists, recommendation = Redis token bucket.
 - §D: MP-check — hard-to-reverse=PASS (≥3 days), surprising=PASS (Nginx alternative), real-trade-off=PASS (3 finalists). User confirms ADR creation.
-- §E: створює `adr/0001-token-bucket-with-redis.md` зі Status=Proposed. Backlink у brainstorm.md.
-- §F: один commit `01-02: intake for rate-limiting-per-user (idea-brief + brainstorm + ADR-0001 + CONTEXT)`.
-- §G: пропонує `sdlc:classify-size`.
+- §E: creates `adr/0001-token-bucket-with-redis.md` with Status=Proposed. Backlink in brainstorm.md.
+- §F: one commit `01-02: intake for rate-limiting-per-user (idea-brief + brainstorm + ADR-0001 + CONTEXT)`.
+- §G: proposes `sdlc:classify-size`.
 
 ## Expected files
 
@@ -49,6 +49,6 @@ CONTEXT.md              # ## Glossary: - tenant — ...
 ## Score against rubric.md
 
 D1: 5 files exist, no extras.
-D2: usі DoDs intake + fix-term + propose-adr met.
-D3: no inline MP-check duplication у intake; ADR title описує рішення, не проблему.
-D4: commit message має правильний префікс `01-02:` + повний list файлів.
+D2: all DoDs of intake + fix-term + propose-adr met.
+D3: no inline MP-check duplication in intake; the ADR title describes the decision, not the problem.
+D4: the commit message has the right prefix `01-02:` + the full list of files.

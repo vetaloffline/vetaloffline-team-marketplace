@@ -2,7 +2,7 @@
 
 ## Scenario
 
-Recommendation що проходить усі 3 MP checks (PASS). Очікується ADR stub зі Status=Proposed + backlink.
+A recommendation that passes all 3 MP checks (PASS). Expected: an ADR stub with Status=Proposed + a backlink.
 
 ## Pre-existing
 
@@ -10,30 +10,30 @@ Recommendation що проходить усі 3 MP checks (PASS). Очікуєт
 delivery/rate-limit-test/brainstorm.md
 ```
 
-Зміст `brainstorm.md` (фрагмент):
+Contents of `brainstorm.md` (fragment):
 
 ```markdown
 # Brainstorm — rate-limit-test
 
 ## Context
-Per-tenant rate limit для B2B platform.
+Per-tenant rate limit for a B2B platform.
 
 ## Options
 
 ### Redis token bucket
-Pros: Redis existing, INCR+EXPIRE простий.
-Cons: SPOF якщо Redis down.
+Pros: Redis existing, INCR+EXPIRE is simple.
+Cons: SPOF if Redis is down.
 
 ### Nginx limit_req_zone
 Pros: nginx existing.
-Cons: zone-key — не tenant.
+Cons: the zone key is not the tenant.
 
 ### Envoy ratelimit
 Pros: dedicated service.
-Cons: ще один компонент.
+Cons: one more component.
 
 ## Recommendation
-Redis token bucket — Redis уже є, найдешевший integration.
+Redis token bucket — Redis is already there, the cheapest integration.
 ```
 
 ## User input
@@ -41,15 +41,15 @@ Redis token bucket — Redis уже є, найдешевший integration.
 ```
 /sdlc-propose-adr rate-limit-test
 
-Recommendation з brainstorm — Redis token bucket. Хочу зафіксувати ADR.
+The recommendation from brainstorm is Redis token bucket. I want to record an ADR.
 ```
 
 ## Expected behavior
 
-1. Skill reads brainstorm.md, extracts recommendation і options.
-2. Q1 hard-to-reverse: `≥ 3 days` (зміна сховища). PASS.
-3. Q2 surprising in 6 months: `Так — non-obvious, nginx existing` (PASS).
-4. Q3 real trade-off: програмний check finds ≥3 finalists (Redis / Nginx / Envoy). PASS.
+1. Skill reads brainstorm.md, extracts the recommendation and options.
+2. Q1 hard-to-reverse: `≥ 3 days` (a storage change). PASS.
+3. Q2 surprising in 6 months: `Yes — non-obvious, nginx existing` (PASS).
+4. Q3 real trade-off: a programmatic check finds ≥3 finalists (Redis / Nginx / Envoy). PASS.
 5. Threshold gate: 3/3 PASS → confirm.
 6. User confirms creation.
 7. Compute NNNN=0001, title=`token-bucket-with-redis`.
@@ -68,7 +68,7 @@ delivery/rate-limit-test/
 
 ## Score against rubric.md
 
-D1: ADR file existstwith expected name; brainstorm.md modified (`**Locked in:**` line added).
+D1: ADR file exists with the expected name; brainstorm.md modified (`**Locked in:**` line added).
 D2: propose-adr DoD met — all 3 MP-checks PASS, Status=Proposed, backlink in brainstorm.
-D3: title описує рішення (`token-bucket-with-redis`), не проблему (`rate-limiting`).
+D3: the title describes the decision (`token-bucket-with-redis`), not the problem (`rate-limiting`).
 D4: commit prefix `11-proposed:`, ADR number 0001, title kebab-case.

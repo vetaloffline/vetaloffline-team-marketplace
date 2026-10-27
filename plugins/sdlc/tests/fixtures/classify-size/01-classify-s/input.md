@@ -2,7 +2,7 @@
 
 ## Scenario
 
-Feature на межі XS/S: 1 API endpoint + 1 тиждень + internal-only breaking. Очікується класифікація як `S`.
+A feature on the XS/S border: 1 API endpoint + 1 week + an internal-only breaking change. Expected classification: `S`.
 
 ## Pre-existing
 
@@ -10,7 +10,7 @@ Feature на межі XS/S: 1 API endpoint + 1 тиждень + internal-only br
 delivery/rate-limit-headers/idea-brief.md
 ```
 
-idea-brief має §Rough size = `S` (як hint, not authoritative).
+The idea-brief has §Rough size = `S` (as a hint, not authoritative).
 
 ## User input
 
@@ -21,15 +21,15 @@ idea-brief має §Rough size = `S` (як hint, not authoritative).
 ## Expected behavior
 
 1. Skill reads idea-brief.md §Rough size = `S` (starting hint).
-2. `.size` файлу не існує → continue.
+2. No `.size` file exists → continue.
 3. Q1 PR count: user → `2-5 PR`.
-4. Q2 time: user → `1 тиждень`.
-5. Q3 new module/API/migration: user → `Так, один з трьох` (1 новий header у API).
-6. Q4 breaking changes: user → `Так, internal only`.
-7. Classify → `S` (matches: 2-5 PR + 1 тиждень + 1 з 3 + internal).
-8. Skill confirms: «Класифікую як `S`. Зафіксувати?» User: «Так».
+4. Q2 time: user → `1 week`.
+5. Q3 new module/API/migration: user → `Yes, one of the three` (1 new header in the API).
+6. Q4 breaking changes: user → `Yes, internal only`.
+7. Classify → `S` (matches: 2-5 PR + 1 week + 1 of 3 + internal).
+8. Skill confirms: «Classifying as `S`. Record it?» User: «Yes».
 9. Write `delivery/rate-limit-headers/.size` → `S` (single line, no trailing newline issues).
-10. PRD.md не існує → skip sync.
+10. PRD.md doesn't exist → skip sync.
 11. Commit `size: rate-limit-headers classified as S`.
 
 ## Expected files
@@ -42,12 +42,12 @@ delivery/rate-limit-headers/
 
 ## Score against rubric.md
 
-D1: `.size` файл існує, одна літера `S`.
+D1: the `.size` file exists, a single letter `S`.
 D2: all 4 questions asked; user confirm; not silent write.
 D3: `.size` is one-liner (no frontmatter, no comments).
-D4: commit prefix `size:`, slug + size відповідні.
+D4: commit prefix `size:`, slug + size match.
 
 ## Edge case caught
 
-Якщо skill автомагічно класифікує і пише без AskUserQuestion → catches silent-classify regression.
-Якщо skill пише `S\n\n` або multi-line → wrappers grep-логіка фейлить.
+If the skill classifies automagically and writes without AskUserQuestion → catches the silent-classify regression.
+If the skill writes `S\n\n` or multi-line → the wrappers' grep logic fails.

@@ -30,30 +30,30 @@ stage: "04-05"
 
 # Skill: architecture-design (SDLC stages 04-05 🚪 GATE)
 
-Generator of the **Software Architecture Document** (`docs/features/<slug>/sad.md` — Arc42 12 sections, C4 Context inline in §3 and C4 Container inline in §5) plus supporting ADRs (`docs/features/<slug>/adr/NNNN-*.md`). It drafts all 12 sections in memory, walks them Socratically one section at a time, spawns an ADR only when a decision's *blast radius* (масштаб удару — how painful it is to reverse the decision later) crosses the gate, writes each resolved section and its ADRs as one atomic commit, and runs a clean-context critic over the finished SAD. The document itself is the state — resuming after an interrupt is free. L3 Component / L4 Code are out of scope. This file is the spine; detail lives in `references/`.
+Generator of the **Software Architecture Document** (`docs/features/<slug>/sad.md` — Arc42 12 sections, C4 Context inline in §3 and C4 Container inline in §5) plus supporting ADRs (`docs/features/<slug>/adr/NNNN-*.md`). It drafts all 12 sections in memory, walks them Socratically one section at a time, spawns an ADR only when a decision's *blast radius* (how painful it is to reverse the decision later) crosses the gate, writes each resolved section and its ADRs as one atomic commit, and runs a clean-context critic over the finished SAD. The document itself is the state — resuming after an interrupt is free. L3 Component / L4 Code are out of scope. This file is the spine; detail lives in `references/`.
 
 The Socratic machine, the critic, the size matrix, and the ask-style are **shared** — this skill keeps only its deltas:
 → [`../_shared/socratic-loop.md`](../_shared/socratic-loop.md) · [`../_shared/critic.md`](../_shared/critic.md) · [`../_shared/size-matrix.md`](../_shared/size-matrix.md) · [`../_shared/ask-style.md`](../_shared/ask-style.md)
 
 Depth governs the per-section question volume + autonomy → [`../_shared/interview-depth.md`](../_shared/interview-depth.md). C4 diagrams are confirmed in prose, never as raw source → [`../_shared/diagram-presentation.md`](../_shared/diagram-presentation.md). architecture-design is also where the feature's **target surface(s)** are chosen — the first §4 decision, written to `sad.md` frontmatter `target_surfaces` and read (never re-derived) by every downstream stage → [`../_shared/surfaces.md`](../_shared/surfaces.md).
 
-## Як це читати (короткий вступ)
+## How to read this (short intro)
 
-Це інструкція для агента, який запускає skill. У ній **7-крокова процедура** (Protocol нижче) — крок за кроком, як з PRD дістатися до готового `sad.md` з 5-12 ADR.
+These are instructions for the agent that runs the skill. They hold a **7-step procedure** (Protocol below) — step by step, how to get from the PRD to a finished `sad.md` with 5-12 ADRs.
 
-Якщо вперше відкриваєш файл — почни з: **`## When to use`** + **`## Inputs`** (коли skill застосовний), потім **`## Protocol`** (7 кроків), потім References (деталі на кожен крок), і **`## Definition of Done`** (що має бути виконано до завершення).
+If you open this file for the first time, start with **`## When to use`** + **`## Inputs`** (when the skill applies), then **`## Protocol`** (7 steps), then References (details for each step), and **`## Definition of Done`** (what must be done before finishing).
 
-**Словничок термінів** (англо-термін → що означає UA одним рядком):
+**Glossary** (term → what it means, in one line):
 
-- *target surface* — таргет-сёрфейс: *що саме ми будуємо* (бекенд-сервіс / веб-фронт / мобільний застосунок / CLI / worker / library-sdk). Обирається тут, у §4, і записується у `target_surfaces:` frontmatter SAD → [`../_shared/surfaces.md`](../_shared/surfaces.md).
-- *depth dial* — депт-діал: регулятор easy/medium/hard на запуск — скільки skill питає vs вирішує сам → [`../_shared/interview-depth.md`](../_shared/interview-depth.md).
-- *blast radius* — масштаб удару: наскільки боляче буде передумати рішення.
-- *Socratic loop* — режим діалогу з користувачем питаннями про рішення (одна `AskUserQuestion` за раз).
-- *blast-radius gate* — перевірка з 3 критеріями: незворотнє (≥3 днів переробки), зачіпає ≥2 модулі, є чесна альтернатива. **2 з 3 → ADR.**
-- *4-state machine* — 4 можливі дії з рішенням: **Прийняти** / **Виправити** / **Винести у відкрите питання** / **Викинути**.
-- *Save-as-OQ* — рішення не приймається зараз, переноситься у §11 SAD як відкрите питання з власником і дедлайном.
-- *MADR* — формат файлу ADR (markdown з заголовком, контекстом, опціями, наслідками).
-- *clean-context critic* — окремий subagent (`sdlc:critic`), який бачить лише фінальний файл (а не діалог), і шукає внутрішні протиріччя.
+- *target surface* — *what exactly we are building* (backend service / web frontend / mobile app / CLI / worker / library-sdk). Chosen here, in §4, and written into the SAD frontmatter `target_surfaces:` → [`../_shared/surfaces.md`](../_shared/surfaces.md).
+- *depth dial* — the easy/medium/hard regulator per run — how much the skill asks vs decides itself → [`../_shared/interview-depth.md`](../_shared/interview-depth.md).
+- *blast radius* — how painful it will be to change the decision later.
+- *Socratic loop* — a dialogue mode that asks the user about decisions (one `AskUserQuestion` at a time).
+- *blast-radius gate* — a check with 3 criteria: irreversible (≥3 days of rework), touches ≥2 modules, has an honest alternative. **2 of 3 → ADR.**
+- *4-state machine* — 4 possible actions on a decision: **Approve** / **Edit** / **Save as open question** / **Drop**.
+- *Save-as-OQ* — the decision is not made now; it moves to SAD §11 as an open question with an owner and a due date.
+- *MADR* — the ADR file format (markdown with a title, context, options, consequences).
+- *clean-context critic* — a separate subagent (`sdlc:critic`) that sees only the final file (not the dialogue) and looks for internal contradictions.
 
 ## Owner
 

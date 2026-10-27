@@ -1,8 +1,8 @@
-# sdlc — форк у маркетплейсі vetaloffline-team
+# sdlc — a fork in the vetaloffline-team marketplace
 
-Форк [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (коміт `27cadcb`), версія `0.0.2`.
-Ліцензія MIT, копірайт автора — у [LICENSE](LICENSE). Назва плагіна (`sdlc`), агенти (`sdlc:<agent>`)
-і дефолти — як в оригіналі.
+Fork of [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (commit `27cadcb`), version `0.0.2`.
+MIT license, the author's copyright is in [LICENSE](LICENSE). The plugin name (`sdlc`), agents (`sdlc:<agent>`)
+and defaults are as in the original.
 
 ## Install
 
@@ -11,19 +11,19 @@ claude plugin marketplace add vetaloffline/vetaloffline-team-marketplace
 claude plugin install sdlc@vetaloffline-team
 ```
 
-У сесії Claude Code: `/plugin install sdlc --marketplace vetaloffline/vetaloffline-team-marketplace`.
-Перевірити: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`. Якщо встановлений
-оригінальний `sdlc@sdlc`, вимкни його: обидва дають ті самі `sdlc:*` скіли й агенти.
+In a Claude Code session: `/plugin install sdlc --marketplace vetaloffline/vetaloffline-team-marketplace`.
+Check: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`. If the original
+`sdlc@sdlc` is installed, disable it: both provide the same `sdlc:*` skills and agents.
 
-## Відмінності від оригіналу
+## Differences from the original
 
-- `generate-data-model` читає `.claude/rules/migrations.md` проєкту на кожному запуску; файл переважує
-  дефолти курсу (формат міграцій, PK, аудит-колонки, CHECK/TRIGGER, видалення, сіди).
-- `implement-tasks` працює з вкладеними код-репо (доки в кореневому репо, код — у підтеках з власним
-  `.git`): репо-власник задачі, коміт у кожному репо окремо, ключ `repos:` у `.claude/sdlc.local.md`.
-- Виправлені посилання на файли; шаблон PR у `ship-feature` без підпису інструмента.
+- `generate-data-model` reads the project's `.claude/rules/migrations.md` on every run; the file overrides
+  the course defaults (migration format, PK, audit columns, CHECK/TRIGGER, deletion, seeds).
+- `implement-tasks` works with nested code repos (docs in the root repo, code in subfolders with their own
+  `.git`): the task's owning repo, a commit in each repo separately, the `repos:` key in `.claude/sdlc.local.md`.
+- Fixed file links; the PR template in `ship-feature` has no tool signature.
 
-Оновлення з оригіналу — вручну: порівняти теку `plugin/` свіжого upstream з цією текою і перенести зміни.
+Updating from the original is manual: compare the `plugin/` folder of a fresh upstream with this folder and port the changes.
 
 ```bash
 git clone --depth 1 https://github.com/genkovich/sdlc /tmp/sdlc-upstream

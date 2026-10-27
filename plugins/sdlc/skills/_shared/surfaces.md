@@ -5,18 +5,18 @@
 > **read** the declaration and gate their own output by it. Each keeps a one-line pointer here and its
 > own delta — the taxonomy and the gating table live **only** in this file, never duplicated per skill.
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-«Таргет-сёрфейс» (target surface) — це **що саме ми будуємо** для фічі: бекенд-сервіс, веб-фронтенд,
-мобільний застосунок, CLI тощо — «різні речі». Раніше плагін мовчазно припускав один зріз
-(сервіс + його HTTP-контракт), а фронт жив як «зовнішній споживач». Тепер `architecture-design` **явно обирає**
-поверхні на етапі архітектури, записує їх у `sad.md` → frontmatter `target_surfaces: [...]`, і всі
-наступні етапи **читають** цей вибір (а не передеривовують щоразу), щоб увімкнути саме свої
-поверхне-специфічні артефакти: UI-архітектурні ADR, шар задач `ui`, фронтові рівні тестів,
-UI-орієнтовані flow-діаграми, правильну форму `api`-контракту.
+A «target surface» is **what exactly we are building** for the feature: a backend service, a web frontend,
+a mobile app, a CLI, etc. — «different things». Previously the plugin silently assumed one slice
+(a service + its HTTP contract), and the frontend lived as an «external consumer». Now `architecture-design` **explicitly chooses**
+the surfaces at the architecture stage, writes them into `sad.md` → frontmatter `target_surfaces: [...]`, and every
+later stage **reads** that choice (instead of re-deriving it each time) to switch on its own
+surface-specific artifacts: UI-architecture ADRs, the `ui` task layer, frontend test tiers,
+UI-oriented flow diagrams, the right shape of the `api` contract.
 
-Поверхня прив'язана до C4: **поверхня = контейнер C4, який фіча вводить або володіє ним**. Це не нове
-поняття — плагін уже говорить мовою C4 у §5 SAD; тут лише робимо вибір контейнерів **явним і типізованим**.
+A surface is tied to C4: **surface = the C4 container the feature introduces or owns**. This is not a new
+concept — the plugin already speaks C4 in SAD §5; here we only make the choice of containers **explicit and typed**.
 
 ---
 

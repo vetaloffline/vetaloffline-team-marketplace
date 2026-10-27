@@ -2,20 +2,20 @@
 
 Read [`../../_shared/critic.md`](../../_shared/critic.md) for the canonical dispatch + the F1–F6 skeleton. architecture-design supplies only the dispatch contract, the resolution loop, the pre-write backstop scans, and the F5/F6/F1 specialization below; the agent prompt body lives in [critic-prompt.md](./critic-prompt.md).
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Крок 7 — окремий **subagent зі свіжими очима** (англ. *clean-context critic*: він НЕ бачив діалогу з користувачем). Дивиться фінальний `sad.md` і шукає **6 класів проблем**:
+Step 7 is a separate **subagent with fresh eyes** (*clean-context critic*: it did NOT see the dialogue with the user). It looks at the final `sad.md` and searches for **6 classes of problems**:
 
-| Клас | Що шукає | Простіше |
+| Class | What it looks for | In plain words |
 |---|---|---|
-| **F1 Strategic-vector drift** | §4 каже одне, а §6 показує інше | «стратегічна нитка зривається» |
-| **F2 Size-class creep** | M-функція виросла у L | «обсяг розповз» |
-| **F3 Defer vs PRD vector** | Відкладене рішення зачіпає PRD-критичний параметр | «відклали те, що PRD назвав ключовим» |
-| **F4 Silent edits** | Текст у sad.md ≠ те, що користувач підтвердив | «тихі правки після Socratic» |
-| **F5 Coverage regression** | Mermaid-блоки лишилися як шаблон, секції порожні, ADR-сироти | «структурні дірки» |
-| **F6 Constraint/Quality leak** | §10 використовує число, якого нема у PRD; ADR має фейкову альтернативу | «протиріччя зі стеком або PRD-числами» |
+| **F1 Strategic-vector drift** | §4 says one thing, §6 shows another | «the strategic thread breaks» |
+| **F2 Size-class creep** | An M feature grew into an L | «scope creep» |
+| **F3 Defer vs PRD vector** | A deferred decision touches a PRD-critical parameter | «deferred what the PRD called key» |
+| **F4 Silent edits** | The text in sad.md ≠ what the user confirmed | «silent edits after the Socratic walk» |
+| **F5 Coverage regression** | Mermaid blocks left as a template, empty sections, orphan ADRs | «structural holes» |
+| **F6 Constraint/Quality leak** | §10 uses a number that isn't in the PRD; an ADR has a fake alternative | «contradicts the stack or the PRD numbers» |
 
-Після критика — окрема перевірка регулярками (синтаксис Mermaid, формат назв ADR, §9 без сиріт).
+After the critic — a separate regex check (Mermaid syntax, ADR name format, §9 without orphans).
 
 ---
 

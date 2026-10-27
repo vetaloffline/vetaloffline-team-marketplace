@@ -36,16 +36,16 @@ The pipeline's anchor on architecture. It produces `docs/architecture-map.md` �
 
 Repo-level utility (one map serves every feature). The scan is delegated to the `sdlc:explorer` agent — read-only brownfield scout per [`../_shared/agent-roster.md`](../_shared/agent-roster.md). Question phrasing → [`../_shared/ask-style.md`](../_shared/ask-style.md).
 
-## Як це читати (короткий вступ)
+## How to read this (short intro)
 
-Це Step 0 SDLC-циклу — перший крок перед будь-якою фічою. Він сканує кодову базу **один раз** і зберігає результат у `docs/architecture-map.md`, щоб усі наступні кроки (`write-prd`, `architecture-design`, `implement-tasks`) читали цей файл, а не пересканували репо щоразу. На **brownfield** (є код) — сканує реальний стан. На **greenfield** (порожнє репо) — разом з тобою вибирає стек і конвенції, зберігає їх як фундамент, і генерує scaffold `tasks.json`.
+This is Step 0 of the SDLC cycle — the first step before any feature. It scans the codebase **once** and saves the result in `docs/architecture-map.md`, so every later step (`write-prd`, `architecture-design`, `implement-tasks`) reads that file instead of re-scanning the repo each time. On **brownfield** (code exists) it scans the real state. On **greenfield** (an empty repo) it picks the stack and conventions together with you, saves them as the foundation, and generates a scaffold `tasks.json`.
 
-**Словничок термінів:**
-- *brownfield* — репо з наявним кодом (є що сканувати).
-- *greenfield* — нове/порожнє репо (фундамент встановлюється з нуля).
-- *reflects_commit* — git-sha, яка архітектурна карта відображає (для відстеження свіжості).
-- *scaffold tasks.json* — набір завдань, який `implement-tasks` матеріалізує у скелет проєкту.
-- *§Frontend / UI foundation* — секція карти, яка описує дизайн-систему, компоненти і токени: щоб `architecture-design` / `break-tasks` / `implement-tasks` **перевикористовували**, а не перевинаходили UI.
+**Glossary:**
+- *brownfield* — a repo with existing code (there is something to scan).
+- *greenfield* — a new/empty repo (the foundation is set from scratch).
+- *reflects_commit* — the git sha the architecture map reflects (to track freshness).
+- *scaffold tasks.json* — a set of tasks that `implement-tasks` materializes into the project skeleton.
+- *§Frontend / UI foundation* — the map section that describes the design system, components and tokens, so that `architecture-design` / `break-tasks` / `implement-tasks` **reuse** the UI instead of reinventing it.
 
 ## Owner
 
