@@ -78,37 +78,37 @@ If a question reads like a config dump or a spec excerpt, it's wrong. Write it a
 
 ## Review of a derived artifact (diagrams, inventories, coverage rows)
 
-Some stages don't make decisions — they **derive** an artifact from decisions earlier stages already approved: `complete-sequence-diagrams` draws flows from PRD §4/§5 + `sad.md` §5/ADRs + code; a C4 view renders SAD decisions. There the person answering (usually the Tech Lead) is a **reviewer**, not a designer: product behaviour was settled by the PM in `write-prd` / `clarify-prd`, architecture in `architecture-design`. A question that sounds like «які флоу мають бути?» or «беремо ці 7?» hands them a decision that isn't theirs and that was already made.
+Some stages don't make decisions — they **derive** an artifact from decisions earlier stages already approved: `complete-sequence-diagrams` draws flows from PRD §4/§5 + `sad.md` §5/ADRs + code; a C4 view renders SAD decisions. There the person answering (usually the Tech Lead) is a **reviewer**, not a designer: product behaviour was settled by the PM in `write-prd` / `clarify-prd`, architecture in `architecture-design`. A question that sounds like "which flows should exist?" or "take these 7?" hands them a decision that isn't theirs and that was already made.
 
 So the question shape changes:
 
-- **`question`** — CONTEXT says plainly what was generated and **from what**: «Я згенерував флоу «прийняти інвайт» з US-02, AC-04, AC-05 і sad §5.» Then the prose description, then one **«Джерела: …»** line — the source of the whole item and of each branch (US/AC id, `sad` section or ADR, code `file:line`, or «конвенція скіла» for fixed mechanics). Then any **source gaps** — what the item needs but no source says, and which command owns it. Close with the ask: «Перевір, що це відповідає джерелам.»
+- **`question`** — CONTEXT says plainly what was generated and **from what**: "I generated the flow 'accept invite' from US-02, AC-04, AC-05 and sad §5." Then the prose description, then one **"Sources: …"** line — the source of the whole item and of each branch (US/AC id, `sad` section or ADR, code `file:line`, or "skill convention" for fixed mechanics). Then any **source gaps** — what the item needs but no source says, and which command owns it. Close with the ask: "Check that this matches the sources."
 - **Options** — review actions, not design choices (canonical set below). No option invents new behaviour; a correction that would add behaviour no source has is routed back to its stage (`/sdlc:clarify-prd` for product, `/sdlc:architecture-design` for technical), not drawn here.
 
 ```
-- label: "Все вірно, апрув"
-  description: "Діаграма (або список) збігається з джерелами з рядка «Джерела». Лишаю блок у файлі як є,
-    записую його як перевірений і переходжу до наступного. Нічого нового в PRD чи SAD не з'являється —
-    ти лише підтверджуєш, що я правильно переніс уже ухвалені рішення."
-- label: "Є розбіжність з джерелом — виправити"
-  description: "Я щось переніс неправильно: наприклад, AC-04 каже «показати помилку», а на діаграмі
-    інвайт просто ігнорується. Ти називаєш джерело (US/AC, розділ sad чи ADR, файл:рядок у коді) і що
-    не так; я перемальовую цей один блок під джерело, перевіряю, що Mermaid парситься, і показую ще раз
-    (один раунд — друга відповідь фінальна). Якщо виправлення додає поведінку, якої нема в жодному
-    джерелі, це не правка діаграми, а прогалина в джерелі: я її позначаю і відправляю в
-    /sdlc:clarify-prd або /sdlc:architecture-design."
-- label: "Відкласти в OQ"
-  description: "Зараз не вирішити, чи діаграма правильна (наприклад, джерела суперечать одне одному).
-    Прибираю блок і додаю рядок у таблицю відкритих питань (OQ — open question, питання з власником і
-    дедлайном); власника і дедлайн питаю наступним кроком, без них це стає «Прибрати». Покриття US/AC,
-    яке тримав цей блок, перевіряю на кроці покриття."
-- label: "Прибрати"
-  description: "Блок зайвий — наприклад, дублює інший флоу. Прибираю його з файлу. Якщо через це
-    якийсь US чи AC лишиться непокритим, на кроці покриття я виведу його знову з джерела або позначу як
-    прогалину в джерелі — сам нову поведінку не домальовую."
+- label: "Correct — approve"
+  description: "The diagram (or list) matches the sources in the 'Sources' line. I keep the block in the
+    file as is, mark it reviewed and move to the next one. Nothing new enters the PRD or the SAD — you
+    only confirm that I carried over decisions that were already made."
+- label: "Mismatch with source — fix"
+  description: "I carried something over wrong: e.g. AC-04 says 'show an error', but the diagram just
+    ignores the invite. You name the source (US/AC, a sad section or ADR, file:line in the code) and
+    what is off; I redraw that one block to match the source, check that the Mermaid parses, and show it
+    again (one round — the second answer is final). If the fix adds behaviour that no source has, it is
+    not a diagram fix but a source gap: I mark it and route it to /sdlc:clarify-prd or
+    /sdlc:architecture-design."
+- label: "Defer to OQ"
+  description: "It can't be settled now whether the diagram is right (e.g. two sources contradict each
+    other). I remove the block and add a row to the open-questions table (OQ — open question, a question
+    with an owner and a due date); I ask for the owner and due next — without both it becomes 'Remove'.
+    The US/AC coverage this block held is re-checked at the coverage step."
+- label: "Remove"
+  description: "The block is redundant — e.g. it duplicates another flow. I remove it from the file. If
+    that leaves a US or AC uncovered, at the coverage step I derive it again from its source or mark it
+    as a source gap — I never draw new behaviour myself."
 ```
 
-For a whole derived list (e.g. the flow inventory before drawing) the first two options are enough: «Все вірно, апрув» / «Є розбіжність з джерелом — виправити».
+For a whole derived list (e.g. the flow inventory before drawing) the first two options are enough: "Correct — approve" / "Mismatch with source — fix".
 
 ## Dry → explanatory (worked rewrite)
 
