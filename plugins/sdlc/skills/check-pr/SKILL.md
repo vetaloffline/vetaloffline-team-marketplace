@@ -118,6 +118,10 @@ when called (`/sdlc:check-pr <url>`) or from `ship-feature` step 6.
 Use the account `gh` / `glab` is logged in with. A check whose `link` is not a GitHub Actions run (an
 external app) has no log through `gh` — give the user the link and ask.
 
+Exit codes of `gh pr checks`: `1` when a check failed (the output is still the list — read it), `8`
+while pending. Right after a push it can print `no checks reported` because the new run is not
+registered yet: run the wait command again — it is not "no CI".
+
 ### How to write the commands (so they can run without prompts)
 
 Claude Code asks before a Bash command unless every part of it matches an allow rule. A background
