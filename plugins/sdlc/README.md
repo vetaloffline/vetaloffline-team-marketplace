@@ -21,9 +21,10 @@ Check: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`.
   the course defaults (migration format, PK, audit columns, CHECK/TRIGGER, deletion, seeds).
 - `implement-tasks` works with nested code repos (docs in the root repo, code in subfolders with their own
   `.git`): the task's owning repo, a commit in each repo separately, the `repos:` key in `.claude/sdlc.local.md`.
-- New skill `check-pr` (`/sdlc:check-pr <url>`): after a PR/MR is created it reads every check of the
-  PR's pipeline, fixes each failing one on the feature branch and repeats until all are green; when the
-  cause is unclear (another repo or merge order, flaky/infra, PRD/contract, secrets) it asks.
+- New skill `check-pr` (`/sdlc:check-pr <url>`) + agent `sdlc:pr-fixer`: after a PR/MR is created the
+  skill dispatches one agent per PR; the agent reads every check of the PR's pipeline, fixes each failing
+  one on the feature branch and repeats until all are green. When the cause is unclear (another repo or
+  merge order, flaky/infra, PRD/contract, secrets) the agent stops, the session asks and resumes it.
   GitHub and GitLab (incl. Enterprise / self-hosted, detected by `gh` / `glab` login for the host);
   any other forge → it asks how to read the checks. `ship-feature` runs it as step 6. The plugin's `PostToolUse` hook `hooks/pr-created.py` adds a note
   after any `gh pr create` / `glab mr create` in a session, so a PR opened outside `ship-feature` gets
@@ -41,12 +42,12 @@ diff -ru /tmp/sdlc-upstream/plugin plugins/sdlc
 
 # sdlc — Claude Code plugin
 
-21 skills + 11 plugin-namespaced agents for a full ideation → ship pipeline with Claude.
+21 skills + 12 plugin-namespaced agents for a full ideation → ship pipeline with Claude.
 
 - **12-stage backbone** — covers the entire cycle from codebase scan to merge & changelog.
 - **8 cross-cutting utilities** — called ad-hoc at any stage (classify-size, fix-term, decide-adr, roadmap, prepare-design-spec, verify-ui, user-documentation, check-pr).
 - **1 ideation skill** — interview (runs researcher / strategist / analyst / devils-advocate agents).
-- **11 agents** — dispatched as `sdlc:<name>` from inside skills; model/effort policy in `skills/_shared/agent-roster.md`.
+- **12 agents** — dispatched as `sdlc:<name>` from inside skills; model/effort policy in `skills/_shared/agent-roster.md`.
 - **10 shared references** — `skills/_shared/` files consumed by multiple skills (surfaces, handoff, mermaid-check, depth-dial, …).
 
 Each skill is a self-contained folder under `skills/<name>/` — `SKILL.md` (protocol + DoD + anti-patterns), optional `templates/` (skeletons the skill copies into `docs/features/<slug>/`), optional `references/` (mini-guides the skill reads at specific protocol steps).
@@ -100,7 +101,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 ## Agents
 
-11 agents are dispatched as `sdlc:<name>` from inside skills — never called directly by the user. Model/effort policy for each agent lives in [`skills/_shared/agent-roster.md`](skills/_shared/agent-roster.md).
+12 agents are dispatched as `sdlc:<name>` from inside skills — never called directly by the user. Model/effort policy for each agent lives in [`skills/_shared/agent-roster.md`](skills/_shared/agent-roster.md).
 
 | Agent | Role | Dispatched from |
 |-------|------|----------------|
@@ -115,6 +116,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | `sdlc:refactor` | REFACTOR — tidy while green, isolated (sonnet) | implement-tasks |
 | `sdlc:reviewer` | Final feature review (opus) | review-feature |
 | `sdlc:doc-flow` | Per-flow user-doc walk + write (sonnet) | user-documentation |
+| `sdlc:pr-fixer` | One PR's checks to green: read logs, fix, push, repeat; hands questions back (sonnet) | check-pr |
 
 ## Shared mechanisms
 
@@ -122,7 +124,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 | File | Purpose |
 |------|---------|
-| `agent-roster.md` | Model/effort/agents policy for all 11 agents |
+| `agent-roster.md` | Model/effort/agents policy for all 12 agents |
 | `ask-style.md` | AskUserQuestion formatting conventions |
 | `critic.md` | Critic-phase protocol (clean-context adversarial review) |
 | `diagram-presentation.md` | Mermaid diagram rendering and presentation rules |
