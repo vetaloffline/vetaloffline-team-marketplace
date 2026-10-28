@@ -1,6 +1,6 @@
 {
   "name": "sdlc",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Fork of genkovich/sdlc 4.6.2: the full SDLC pipeline from idea to release — interview, PRD, SAD + ADR, sequences, data model and migrations, API contract, tasks, test plan, TDD implementation, review, release. Skills follow the project's .claude/rules/ and work with nested code repos.",
   "author": {
     "name": "Vitaliy",
