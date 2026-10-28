@@ -78,8 +78,9 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
   `sad.md` §6 (the sequence flows/branches each AC should appear in), `sad.md` frontmatter
   `target_surfaces` (which surfaces gate the trace), `data-model.md` /
   `contracts/openapi.yaml` / Accepted `adr/` (the contracts the code must honour),
-  `test-plan.md` (the AC→test map, if a separate file), and `tasks/tasks.json` (which AC each
-  task claimed).
+  `test-plan.md` (the AC→test map, if a separate file), `tasks/tasks.json` (which AC each
+  task claimed), and — when the change touched UI — `_review/verify-ui.md` (the browser verdicts,
+  or the line saying the user skipped the browser check).
 
 ## Protocol
 
@@ -111,7 +112,11 @@ Tech Lead / a reviewer who did **not** write the code (independence is the point
         The trace spans **every surface declared in `sad.md` `target_surfaces`**: for a UI
         surface (`web-frontend` / `mobile-app` / `desktop-app`) a UI AC must trace to a `ui`-layer
         task **and** a component / e2e-through-UI test — not only a backend one. A UI AC that
-        only has a backend test is a stage-1 gap. Flag anything that **drops out anywhere** in
+        only has a backend test is a stage-1 gap. When the change touched UI, read
+        `_review/verify-ui.md`: its verdicts are the browser evidence for those ACs, and a FAIL still
+        in it is a stage-1 finding; «skipped by the user» is reported as «UI not checked in the
+        browser — user's choice», not as a finding; no file at all while UI changed is a stage-1
+        finding (the `implement-tasks` step-10 question was never asked). Flag anything that **drops out anywhere** in
         the chain: a user story with no AC, no §6 flow; an AC missing a flow, a task, a test, or
         code. The per-stage gates each guard one link; `review-feature` is the **end-to-end
         backstop** that catches what slipped between links and never reached the diff.

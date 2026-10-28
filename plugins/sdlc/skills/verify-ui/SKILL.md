@@ -12,8 +12,10 @@ description: >-
   "прокликай {story} у браузері", "verify AC through the UI", "/sdlc:verify-ui {slug-or-story}".
   CLI-first (token-efficient `playwright-cli` in bash, the default for loops/CI); Playwright MCP
   stays available for live stateful debugging. Reads the AC from the feature/story file, never
-  invents criteria, never fixes code — it only renders a verdict. Hard-refuses if no dev server
-  is reachable.
+  invents criteria, never fixes code — it only renders a verdict. Runs on request, or from
+  implement-tasks when the user chooses the browser check. Checks desktop and mobile viewports.
+  Stops and waits if the session has no working browser tools; hard-refuses if no dev server is
+  reachable.
 triggers:
   - /sdlc:verify-ui
   - "verify ui for"
@@ -42,7 +44,7 @@ For a backend-only feature the browser channel gives no signal — there it's te
 
 ## CLI by default, MCP for live debugging
 
-The channel's canonical tool is **Playwright**, but in two forms:
+The channel's canonical tool is **Playwright**, but in two forms (any browser tool the session already has — e.g. a built-in browser pane — is equally valid; the rules below are about the browser run, not one tool):
 
 - **`playwright-cli` (default).** Bash commands, token-efficient: they don't load huge tool schemas
   and full accessibility trees into the context. This is the default for loops and CI, because
@@ -63,16 +65,24 @@ npx playwright install chromium          # browser
 playwright-cli install --skills          # give the agent the CLI «skills» (SKILL.md from Playwright)
 ```
 
-## Precondition (GATE)
+## Preconditions (GATE)
 
-The application must be up (dev server). If `playwright-cli open <url>` fails to connect —
-**don't invent the state**; first start the server (`npm run dev` / `make dev`) and retry. Without a live
-application the skill hard-refuses.
+- **Browser tools.** The session must have a working browser tool (`playwright-cli`, Playwright MCP, or the
+  session's own browser). If none is available, or it cannot connect, **stop and wait**: tell the user what is
+  missing (not installed / not connected / no permission) and wait until it works. Do not continue without it,
+  do not fall back to unit / component / E2E test results, and never report an AC as verified. No browser,
+  no verification.
+- **The application.** It must be up (dev server). If `playwright-cli open <url>` fails to connect —
+  **don't invent the state**; first start the server (`npm run dev` / `make dev`) and retry. Without a live
+  application the skill hard-refuses.
 
 ## Steps
 
-1. **Find the ACs.** Read the feature/story file (`docs/features/<slug>/PRD.md` §5, or `tasks/<story>.md`)
-   — extract the Given/When/Then blocks. Check **only** what is there.
+1. **Find the ACs and flows.** Read the feature/story file (`docs/features/<slug>/PRD.md` §5, or `tasks/<story>.md`)
+   — extract the Given/When/Then blocks. Check **only** what is there, but check **all** of it: every AC the
+   UI touches, and every UI-driven flow in `sad.md` §6 they belong to, including the empty, error and edge
+   states those ACs and the test plan name. A sample is not a verification.
+   Called from `implement-tasks`, the scope is the ACs of the run's UI tasks.
 2. **Open the application.** `playwright-cli open <url>` (e.g. `http://localhost:5173`).
 3. **Read the initial state.** `playwright-cli snapshot` — returns not a picture but a text
    tree of elements with refs (`e21` etc.). Pick the elements the ACs refer to.
@@ -80,7 +90,11 @@ application the skill hard-refuses.
    `fill <ref> <text>`, `press <key>`, `select <ref> <val>`. Then **read the real state** for the
    Then: `snapshot` (DOM), `eval "<js>"` (computed styles/values — e.g. `getComputedStyle`),
    `localstorage-get <key>` (persistence), `reload` (does the state survive a reload).
-5. **Record the evidence.** `playwright-cli screenshot` saves a snapshot as the run's artifact.
+5. **Repeat at a mobile viewport.** Run every AC again at a phone-sized viewport — 375×812 unless the
+   project's rules set another size — after the desktop pass. A layout can pass on desktop and break on a
+   phone; the verdict line names the viewport that failed.
+6. **Record the evidence.** `playwright-cli screenshot` saves a snapshot as the run's artifact — one per AC
+   per viewport. Write the verdict block and the screenshot paths to `docs/features/<slug>/_review/verify-ui.md`.
 
 ## Output — a discrete verdict per AC (evidence-before-assertion)
 
@@ -105,14 +119,17 @@ the Figma MCP doesn't replace the browser channel, it complements it.
 
 ## Acceptance criteria of this skill
 
-- A verdict for every AC from the story/PRD, with the actual value from the live page state.
+- A verdict for every AC from the story/PRD and every UI flow they touch, at desktop and mobile viewports, with the actual value from the live page state.
+- No browser tools → the run stopped and waited; nothing was reported as verified.
 - The run goes through `playwright-cli` by default (MCP only if live debugging is explicitly needed).
 - There is screenshot evidence of the run.
 
 ## Anti-patterns
 
 - **Don't invent ACs** — check only what is in the story/PRD.
-- **Don't substitute a unit test for the browser** — the point of the channel is the real DOM/behaviour.
+- **Don't substitute a unit test for the browser** — the point of the channel is the real DOM/behaviour. Agent-written E2E specs don't replace it either.
+- **Don't carry on without a browser** — missing or disconnected browser tools mean stop and wait, not a test-based verdict.
+- **Don't check a sample** — every AC and flow in scope, desktop and mobile.
 - **Don't «fix» code here** — the skill only gives a verdict; the fix is a separate step (`implement-tasks`).
 - **Don't report PASS without a read state** — «looks right» without `snapshot`/`eval` is
   not evidence but a guess.
