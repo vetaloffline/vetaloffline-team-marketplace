@@ -55,10 +55,10 @@ The implementer (drives) + the reviewer who signed off in `review-feature`.
 
 4. **Prepare the PR body.** Ensure the work is on a feature branch (not the default branch). Draft the PR body from [`./templates/pr-body.md`](./templates/pr-body.md): summary, the ACs it satisfies, links to PRD/sad/ADRs, the `SDLC-Task` commit list, the test + verification evidence, and any migration/rollback note.
 
-5. **Detect the forge + propose the PR command.** Inspect the git remote URL:
-   - `github.com` → `gh pr create --title "feat(<slug>): <summary>" --body-file docs/features/<slug>/pr-body.md`
-   - `gitlab.com` or self-hosted GitLab (any non-github remote) → `glab mr create --title "feat(<slug>): <summary>" --description-file docs/features/<slug>/pr-body.md`
-   - Remote undetectable / unknown forge → print the branch name + body for manual PR creation.
+5. **Detect the forge + propose the PR command.** Take the host from the git remote URL and detect the forge as in [`check-pr` → Detect the forge](../check-pr/SKILL.md#detect-the-forge):
+   - `github.com`, or a host where `gh auth status --hostname <host>` exits `0` (GitHub Enterprise) → `gh pr create --title "feat(<slug>): <summary>" --body-file docs/features/<slug>/pr-body.md`
+   - `gitlab.com`, or a host where `glab auth status --hostname <host>` exits `0` (self-hosted GitLab) → `glab mr create --title "feat(<slug>): <summary>" --description-file docs/features/<slug>/pr-body.md`
+   - Any other forge (Bitbucket, Gitea/Forgejo, Azure DevOps…), an unknown host, or an undetectable remote → no command from memory: print the branch name + body for manual PR creation and ask the user for the PR link once it exists (step 6 needs it).
    - Nested code repos → one PR per repo that has feature commits, each with its own remote's command. If one PR needs another merged first (the app's e2e runs against the api's default branch), write that order into both PR bodies.
    **Propose** the command and ask whether to create the PR now. Push the feature branch and create it only on the user's yes (or the user runs it and gives you the URL). Never push to the default branch and never merge.
 

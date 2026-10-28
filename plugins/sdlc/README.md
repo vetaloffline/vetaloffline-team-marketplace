@@ -24,7 +24,8 @@ Check: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`.
 - New skill `check-pr` (`/sdlc:check-pr <url>`): after a PR/MR is created it reads every check of the
   PR's pipeline, fixes each failing one on the feature branch and repeats until all are green; when the
   cause is unclear (another repo or merge order, flaky/infra, PRD/contract, secrets) it asks.
-  `ship-feature` runs it as step 6. The plugin's `PostToolUse` hook `hooks/pr-created.py` adds a note
+  GitHub and GitLab (incl. Enterprise / self-hosted, detected by `gh` / `glab` login for the host);
+  any other forge → it asks how to read the checks. `ship-feature` runs it as step 6. The plugin's `PostToolUse` hook `hooks/pr-created.py` adds a note
   after any `gh pr create` / `glab mr create` in a session, so a PR opened outside `ship-feature` gets
   checked too.
 - Fixed file links; the PR template in `ship-feature` has no tool signature.

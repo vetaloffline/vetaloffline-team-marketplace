@@ -11,8 +11,9 @@ description: >-
   commits, pushes, and reads all checks again — until none is failing. Manual / allow_failure /
   skipped jobs are reported, not fixed. Stops and asks when the cause is unclear: another repo or
   merge/deploy order, flaky or runner failure, a fix that would change the PRD/AC/contract or weaken
-  a test, missing secrets or CI settings, a cancelled check. Never weakens a test, never merges,
-  never turns on auto-merge. Triggers on "check PR {url}", "check the checks", "why is the pipeline
+  a test, missing secrets or CI settings, a cancelled check. GitHub (gh) and GitLab (glab, incl.
+  self-hosted); any other forge (Bitbucket, Gitea/Forgejo, Azure DevOps…) → asks the user how to read
+  the checks, never guesses commands. Never weakens a test, never merges, never turns on auto-merge. Triggers on "check PR {url}", "check the checks", "why is the pipeline
   red", "fix CI for {PR}", "/sdlc:check-pr {url-or-number}", "перевір PR", "перевір чеки",
   "перевір мердж-реквест", "чому впав пайплайн". Output: a checks report per PR + fix commits on
   the PR's branch.
@@ -60,6 +61,33 @@ pipeline or not.
   (settings override `.claude/sdlc.local.md` → Makefile → package scripts → language manifests).
 - **Refuse** if the PR cannot be found or `gh` / `glab` is not authenticated for its host — say which
   one and how to log in; do not guess the state from the local gate.
+
+## Detect the forge
+
+Take the host from the PR URL, or from `git remote get-url origin` of the PR's repo. Then:
+
+| Check | Forge | Next |
+|---|---|---|
+| host is `github.com`, or `gh auth status --hostname <host>` exits `0` (GitHub Enterprise) | GitHub | the `gh` column below |
+| host is `gitlab.com`, or `glab auth status --hostname <host>` exits `0` (self-hosted GitLab) | GitLab | the `glab` column below |
+| anything else — `bitbucket.org`, `dev.azure.com`, Gitea / Forgejo (`codeberg.org`…), an unknown host, or a GitHub/GitLab host the CLI is not logged in to | other / unknown | **stop and ask** (below) |
+
+A host name alone is not proof: a `gitlab` in the name with no `glab` login is still "unknown".
+
+**Other or unknown forge → ask, never guess.** This skill has commands checked only for `gh` and
+`glab`; writing another forge's CLI/API calls from memory is how a wrong command gets run. Ask with
+`AskUserQuestion` (shape per [`../_shared/ask-style.md`](../_shared/ask-style.md)), naming the host and
+the PR link. Options:
+- **«You read the checks, I fix»** — you open the PR, paste the list of failing checks and their logs;
+  from there the loop runs as usual (fix → gate → push), and you re-read the checks after each push.
+- **«Use a tool you name»** — you name the CLI or API this forge uses (e.g. the forge's own CLI, or its
+  REST endpoint for pipeline status); I read its `--help` / docs first, write the exact commands into
+  the report, and only then run the loop with them.
+- **«Skip the checks for this PR»** — I record «checks not read — <forge> not supported» in the report
+  as the end state; nothing is claimed green.
+
+The `PostToolUse` hook fires only on `gh pr create` / `glab mr create`; on other forges this skill runs
+when called (`/sdlc:check-pr <url>`) or from `ship-feature` step 6.
 
 ## Commands (checked against `gh` 2.85 / `glab` 1.89 `--help` and live PRs/MRs)
 
@@ -151,6 +179,8 @@ the check and why).
 
 ## Definition of Done
 
+- The forge was detected from the host (GitHub / GitLab by `gh` / `glab` login); on any other forge the
+  user was asked how to read the checks and the answer is in the report.
 - Every check of each PR was read on the PR's latest commit — not only the required ones.
 - Each failing check was fixed on the feature branch (local gate green, commit pushed) and all checks
   were re-read until none failed — or the loop stopped on an ask case and the question/decision is in
@@ -171,6 +201,8 @@ the check and why).
   branch, a merge/deploy order dependency, a flaky runner, a missing secret — ask; don't patch around
   it or retry in a loop.
 - **Fixing only the check you looked at.** Every push starts a new pipeline; read all checks again.
+- **Guessing another forge's commands.** Bitbucket, Gitea, Azure DevOps… are not `gh` / `glab`; ask
+  how to read their checks instead of writing CLI/API calls from memory.
 - **Merging when green.** Green checks do not mean "merge"; no `gh pr merge --auto`, no GitLab "merge
   when pipeline succeeds". Merging stays the user's call.
 
