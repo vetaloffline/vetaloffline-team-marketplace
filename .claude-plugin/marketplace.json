@@ -24,7 +24,7 @@
       "name": "sdlc",
       "source": "./plugins/sdlc",
       "description": "Форк genkovich/sdlc 4.6.2: SDLC-пайплайн від ідеї до релізу (interview → PRD → SAD/ADR → дані, API → задачі → TDD → ревʼю → реліз). generate-data-model слухає .claude/rules/migrations.md проєкту, implement-tasks працює з вкладеними код-репо",
-      "version": "0.0.5",
+      "version": "0.0.6",
       "category": "workflow",
       "tags": [
         "sdlc",
