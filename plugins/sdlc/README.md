@@ -1,6 +1,6 @@
 # sdlc — a fork in the vetaloffline-team marketplace
 
-Fork of [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (commit `27cadcb`), version `0.0.2`.
+Fork of [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (commit `27cadcb`), version `0.0.4`.
 MIT license, the author's copyright is in [LICENSE](LICENSE). The plugin name (`sdlc`), agents (`sdlc:<agent>`)
 and defaults are as in the original.
 
@@ -21,6 +21,10 @@ Check: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`.
   the course defaults (migration format, PK, audit columns, CHECK/TRIGGER, deletion, seeds).
 - `implement-tasks` works with nested code repos (docs in the root repo, code in subfolders with their own
   `.git`): the task's owning repo, a commit in each repo separately, the `repos:` key in `.claude/sdlc.local.md`.
+- `ship-feature` does not stop at opening the PR: it reads every check of the PR's pipeline, fixes each
+  failing one on the feature branch and repeats until all are green; when the cause is unclear (another
+  repo or merge order, flaky/infra, PRD/contract, secrets) it asks. Loop and commands:
+  `skills/_shared/pr-checks.md`.
 - Fixed file links; the PR template in `ship-feature` has no tool signature.
 
 Updating from the original is manual: compare the `plugin/` folder of a fresh upstream with this folder and port the changes.
@@ -40,7 +44,7 @@ diff -ru /tmp/sdlc-upstream/plugin plugins/sdlc
 - **7 cross-cutting utilities** — called ad-hoc at any stage (classify-size, fix-term, decide-adr, roadmap, prepare-design-spec, verify-ui, user-documentation).
 - **1 ideation skill** — interview (runs researcher / strategist / analyst / devils-advocate agents).
 - **11 agents** — dispatched as `sdlc:<name>` from inside skills; model/effort policy in `skills/_shared/agent-roster.md`.
-- **10 shared references** — `skills/_shared/` files consumed by multiple skills (surfaces, handoff, mermaid-check, depth-dial, …).
+- **11 shared references** — `skills/_shared/` files consumed by multiple skills (surfaces, handoff, mermaid-check, depth-dial, …).
 
 Each skill is a self-contained folder under `skills/<name>/` — `SKILL.md` (protocol + DoD + anti-patterns), optional `templates/` (skeletons the skill copies into `docs/features/<slug>/`), optional `references/` (mini-guides the skill reads at specific protocol steps).
 
@@ -73,7 +77,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | 15 | [`plan-tests`](skills/plan-tests/SKILL.md) | `/sdlc:plan-tests` | `docs/features/<slug>/test-plan.md` (surface-gated tiers; generic, no hardcoded tools) |
 | 17 | [`implement-tasks`](skills/implement-tasks/SKILL.md) | `/sdlc:implement-tasks` | committed TDD code + tests + updated `tracker.md`; promotes staged migrations; after UI changes asks whether to run `verify-ui` |
 | 17 | [`review-feature`](skills/review-feature/SKILL.md) 🚪 | `/sdlc:review-feature` | `docs/features/<slug>/_review/review-<date>.md` (PASS / CHANGES REQUESTED) |
-| 18 | [`ship-feature`](skills/ship-feature/SKILL.md) 🚪 | `/sdlc:ship-feature` | `CHANGELOG.md` + PR body; moves feature to `docs/roadmap.md` Shipped |
+| 18 | [`ship-feature`](skills/ship-feature/SKILL.md) 🚪 | `/sdlc:ship-feature` | `CHANGELOG.md` + PR body; reads every PR check and fixes until green (asks when unclear); moves feature to `docs/roadmap.md` Shipped |
 
 🚪 = hard refuse if prereq is missing.
 
@@ -110,7 +114,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 ## Shared mechanisms
 
-`skills/_shared/` contains 10 reference files consumed by multiple skills:
+`skills/_shared/` contains 11 reference files consumed by multiple skills:
 
 | File | Purpose |
 |------|---------|
@@ -121,6 +125,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | `handoff.md` | Stage-handoff block template (every skill ends with one) |
 | `interview-depth.md` | Depth-dial (1–5) for the ideation interview |
 | `mermaid-check.md` | Mermaid syntax validation checklist |
+| `pr-checks.md` | After a PR/MR is created: read every check, fix failures, repeat until green; ask when unclear |
 | `size-matrix.md` | XS/S/M/L/XL classification matrix |
 | `socratic-loop.md` | Socratic Q&A loop protocol shared by multiple skills |
 | `surfaces.md` | `target_surfaces` taxonomy (web / mobile / api / cli / event / background) |

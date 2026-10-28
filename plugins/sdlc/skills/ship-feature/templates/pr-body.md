@@ -34,3 +34,4 @@
 
 - Migration: <run-on-deploy + rollback>, or none.
 - Feature flag / config: <any>, or none.
+- Merge order: <"merge <other repo> PR <link> first — this PR's CI runs against its default branch">, or none.

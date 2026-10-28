@@ -67,7 +67,8 @@ Rules for filling it:
 - **Loop-back** (`review-feature → implement-tasks` on `CHANGES REQUESTED`): **no `/clear`** — you stay in context
   to iterate; *Run next* = `/sdlc:implement-tasks <slug>` (fix), then re-review the changed surface.
 - **Terminal** (`ship-feature`): there is no `/sdlc:` successor. *Run next* becomes **Done** — the PR command/URL
-  + «merging to main is your call»; still print *What I did* + *Review* (the changelog + PR).
+  + «merging to main is your call»; still print *What I did* (incl. the PR checks report and its end state —
+  all green / waiting on the user / stopped) + *Review* (the changelog + PR).
 - **Utility** (`classify-size`, `fix-term`, `decide-adr`, `roadmap`): called ad-hoc, not a gate.
   `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume your
   backbone stage», naming the likely one (e.g. `/sdlc:architecture-design <slug>`). Print *What I did* + *Review*
@@ -88,7 +89,7 @@ Rules for filling it:
 | `plan-tests` | `test-plan.md` (or `PRD.md` `## Test plan` for XS/S) | `/sdlc:implement-tasks <slug>` |
 | `implement-tasks` | the committed diff (code + tests) + `tasks/tracker.md` | `/sdlc:review-feature <slug>` |
 | `review-feature` | `_review/review-<date>.md` | `/sdlc:ship-feature <slug>` (PASS) · `/sdlc:implement-tasks <slug>` (CHANGES, no `/clear`) |
-| `ship-feature` | `CHANGELOG` + the PR | **Done** — PR command/URL; merge is your call |
+| `ship-feature` | `CHANGELOG` + the PR + its checks report | **Done** — PR command/URL; merge is your call |
 | `classify-size` | `.size` | resume — e.g. `/sdlc:write-prd <slug>` |
 | `fix-term` | `CONTEXT.md` | resume — e.g. `/sdlc:architecture-design <slug>` |
 | `decide-adr` | `adr/NNNN-<title>.md` | resume — `/sdlc:break-tasks <slug>` or `/sdlc:plan-tests <slug>` |
