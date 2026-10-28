@@ -21,10 +21,12 @@ Check: `claude plugin list` → `sdlc@vetaloffline-team`, `Status: ✔ enabled`.
   the course defaults (migration format, PK, audit columns, CHECK/TRIGGER, deletion, seeds).
 - `implement-tasks` works with nested code repos (docs in the root repo, code in subfolders with their own
   `.git`): the task's owning repo, a commit in each repo separately, the `repos:` key in `.claude/sdlc.local.md`.
-- `ship-feature` does not stop at opening the PR: it reads every check of the PR's pipeline, fixes each
-  failing one on the feature branch and repeats until all are green; when the cause is unclear (another
-  repo or merge order, flaky/infra, PRD/contract, secrets) it asks. Loop and commands:
-  `skills/_shared/pr-checks.md`.
+- New skill `check-pr` (`/sdlc:check-pr <url>`): after a PR/MR is created it reads every check of the
+  PR's pipeline, fixes each failing one on the feature branch and repeats until all are green; when the
+  cause is unclear (another repo or merge order, flaky/infra, PRD/contract, secrets) it asks.
+  `ship-feature` runs it as step 6. The plugin's `PostToolUse` hook `hooks/pr-created.py` adds a note
+  after any `gh pr create` / `glab mr create` in a session, so a PR opened outside `ship-feature` gets
+  checked too.
 - Fixed file links; the PR template in `ship-feature` has no tool signature.
 
 Updating from the original is manual: compare the `plugin/` folder of a fresh upstream with this folder and port the changes.
@@ -38,13 +40,13 @@ diff -ru /tmp/sdlc-upstream/plugin plugins/sdlc
 
 # sdlc — Claude Code plugin
 
-20 skills + 11 plugin-namespaced agents for a full ideation → ship pipeline with Claude.
+21 skills + 11 plugin-namespaced agents for a full ideation → ship pipeline with Claude.
 
 - **12-stage backbone** — covers the entire cycle from codebase scan to merge & changelog.
-- **7 cross-cutting utilities** — called ad-hoc at any stage (classify-size, fix-term, decide-adr, roadmap, prepare-design-spec, verify-ui, user-documentation).
+- **8 cross-cutting utilities** — called ad-hoc at any stage (classify-size, fix-term, decide-adr, roadmap, prepare-design-spec, verify-ui, user-documentation, check-pr).
 - **1 ideation skill** — interview (runs researcher / strategist / analyst / devils-advocate agents).
 - **11 agents** — dispatched as `sdlc:<name>` from inside skills; model/effort policy in `skills/_shared/agent-roster.md`.
-- **11 shared references** — `skills/_shared/` files consumed by multiple skills (surfaces, handoff, mermaid-check, depth-dial, …).
+- **10 shared references** — `skills/_shared/` files consumed by multiple skills (surfaces, handoff, mermaid-check, depth-dial, …).
 
 Each skill is a self-contained folder under `skills/<name>/` — `SKILL.md` (protocol + DoD + anti-patterns), optional `templates/` (skeletons the skill copies into `docs/features/<slug>/`), optional `references/` (mini-guides the skill reads at specific protocol steps).
 
@@ -62,7 +64,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 ## Skill order — full backbone (12 stages)
 
-> Each stage reads the previous stage's artefacts. The `map-architecture` scan happens **once** at the start; later stages read `docs/architecture-map.md` instead of re-scanning. Cross-cutting utilities (`fix-term`, `classify-size`, `decide-adr`, `roadmap`, `prepare-design-spec`, `verify-ui`) are called ad-hoc, not in sequence — except `verify-ui`, which `implement-tasks` also offers after a run that touched UI (the user chooses: browser check or straight to review).
+> Each stage reads the previous stage's artefacts. The `map-architecture` scan happens **once** at the start; later stages read `docs/architecture-map.md` instead of re-scanning. Cross-cutting utilities (`fix-term`, `classify-size`, `decide-adr`, `roadmap`, `prepare-design-spec`, `verify-ui`, `check-pr`) are called ad-hoc, not in sequence — except `verify-ui`, which `implement-tasks` also offers after a run that touched UI (the user chooses: browser check or straight to review), and `check-pr`, which `ship-feature` runs on every PR it created.
 
 | Stage | Skill | Command | Output |
 |------:|-------|---------|--------|
@@ -77,7 +79,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | 15 | [`plan-tests`](skills/plan-tests/SKILL.md) | `/sdlc:plan-tests` | `docs/features/<slug>/test-plan.md` (surface-gated tiers; generic, no hardcoded tools) |
 | 17 | [`implement-tasks`](skills/implement-tasks/SKILL.md) | `/sdlc:implement-tasks` | committed TDD code + tests + updated `tracker.md`; promotes staged migrations; after UI changes asks whether to run `verify-ui` |
 | 17 | [`review-feature`](skills/review-feature/SKILL.md) 🚪 | `/sdlc:review-feature` | `docs/features/<slug>/_review/review-<date>.md` (PASS / CHANGES REQUESTED) |
-| 18 | [`ship-feature`](skills/ship-feature/SKILL.md) 🚪 | `/sdlc:ship-feature` | `CHANGELOG.md` + PR body; reads every PR check and fixes until green (asks when unclear); moves feature to `docs/roadmap.md` Shipped |
+| 18 | [`ship-feature`](skills/ship-feature/SKILL.md) 🚪 | `/sdlc:ship-feature` | `CHANGELOG.md` + PR body; runs `check-pr` on every PR it created; moves feature to `docs/roadmap.md` Shipped |
 
 🚪 = hard refuse if prereq is missing.
 
@@ -92,6 +94,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | [`roadmap`](skills/roadmap/SKILL.md) | `/sdlc:roadmap` | `docs/roadmap.md` (Now / Next / Later / Shipped tables) |
 | [`prepare-design-spec`](skills/prepare-design-spec/SKILL.md) | `/sdlc:prepare-design-spec` | `docs/features/<slug>/design-spec.md` |
 | [`verify-ui`](skills/verify-ui/SKILL.md) | `/sdlc:verify-ui` | per-AC live browser verdict + screenshot evidence |
+| [`check-pr`](skills/check-pr/SKILL.md) | `/sdlc:check-pr` | after a PR/MR is created: every check read, failures fixed on the PR branch until green, asks when unclear; report per PR |
 | [`user-documentation`](skills/user-documentation/SKILL.md) | `/sdlc:user-documentation` | end-user flow docs + linked User Guide index from a live app (screenshots, optional screencasts) |
 
 ## Agents
@@ -114,7 +117,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 ## Shared mechanisms
 
-`skills/_shared/` contains 11 reference files consumed by multiple skills:
+`skills/_shared/` contains 10 reference files consumed by multiple skills:
 
 | File | Purpose |
 |------|---------|
@@ -125,7 +128,6 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | `handoff.md` | Stage-handoff block template (every skill ends with one) |
 | `interview-depth.md` | Depth-dial (1–5) for the ideation interview |
 | `mermaid-check.md` | Mermaid syntax validation checklist |
-| `pr-checks.md` | After a PR/MR is created: read every check, fix failures, repeat until green; ask when unclear |
 | `size-matrix.md` | XS/S/M/L/XL classification matrix |
 | `socratic-loop.md` | Socratic Q&A loop protocol shared by multiple skills |
 | `surfaces.md` | `target_surfaces` taxonomy (web / mobile / api / cli / event / background) |
@@ -137,6 +139,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 - **`tasks.json`** — machine-readable DAG (`id, title, layer, deps, acs, dod, files_hint`) at `docs/features/<slug>/tasks/tasks.json`; `implement-tasks` reads it to close the cycle.
 - **Staged migrations** — `generate-data-model` writes to `docs/features/<slug>/migrations/`; `implement-tasks` promotes them into the repo's live migrations tree (re-stamping timestamps).
 - **TDD engine** — `implement-tasks` runs SELECT → RED → GREEN → REFACTOR → GATE → COMMIT; supports sequential / agent-team / dynamic Workflow modes; commit trailers `SDLC-Task` / `SDLC-AC`.
+- **PR checks** — every PR/MR gets `check-pr`: `ship-feature` runs it as step 6, and the `PostToolUse` hook `hooks/pr-created.py` adds a note after any `gh pr create` / `glab mr create` in the session. Hook tests: `bash plugins/sdlc/hooks/test-pr-created.sh`.
 - **Stage-handoff blocks** — every skill ends with a handoff block (from `_shared/handoff.md`) naming the next skill and what to pass forward.
 - **Socratic loop** — shared Q&A cadence across write-prd, architecture-design, clarify-prd.
 - **Critic phase** — clean-context `sdlc:critic` / `sdlc:reviewer` used in PRD, architecture, and final review to surface blind spots.

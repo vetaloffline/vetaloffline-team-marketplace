@@ -67,9 +67,9 @@ Rules for filling it:
 - **Loop-back** (`review-feature → implement-tasks` on `CHANGES REQUESTED`): **no `/clear`** — you stay in context
   to iterate; *Run next* = `/sdlc:implement-tasks <slug>` (fix), then re-review the changed surface.
 - **Terminal** (`ship-feature`): there is no `/sdlc:` successor. *Run next* becomes **Done** — the PR command/URL
-  + «merging to main is your call»; still print *What I did* (incl. the PR checks report and its end state —
+  + «merging to main is your call»; still print *What I did* (incl. the `check-pr` report and its end state —
   all green / waiting on the user / stopped) + *Review* (the changelog + PR).
-- **Utility** (`classify-size`, `fix-term`, `decide-adr`, `roadmap`): called ad-hoc, not a gate.
+- **Utility** (`classify-size`, `fix-term`, `decide-adr`, `roadmap`, `check-pr`): called ad-hoc, not a gate.
   `/clear` is **optional** (recommend it only if the context is large); *Run next* = «resume your
   backbone stage», naming the likely one (e.g. `/sdlc:architecture-design <slug>`). Print *What I did* + *Review*
   (the one file it wrote).
@@ -89,11 +89,12 @@ Rules for filling it:
 | `plan-tests` | `test-plan.md` (or `PRD.md` `## Test plan` for XS/S) | `/sdlc:implement-tasks <slug>` |
 | `implement-tasks` | the committed diff (code + tests) + `tasks/tracker.md` | `/sdlc:review-feature <slug>` |
 | `review-feature` | `_review/review-<date>.md` | `/sdlc:ship-feature <slug>` (PASS) · `/sdlc:implement-tasks <slug>` (CHANGES, no `/clear`) |
-| `ship-feature` | `CHANGELOG` + the PR + its checks report | **Done** — PR command/URL; merge is your call |
+| `ship-feature` | `CHANGELOG` + the PR + its `check-pr` report | **Done** — PR command/URL; merge is your call |
 | `classify-size` | `.size` | resume — e.g. `/sdlc:write-prd <slug>` |
 | `fix-term` | `CONTEXT.md` | resume — e.g. `/sdlc:architecture-design <slug>` |
 | `decide-adr` | `adr/NNNN-<title>.md` | resume — `/sdlc:break-tasks <slug>` or `/sdlc:plan-tests <slug>` |
 | `roadmap` | `docs/roadmap.md` | resume your backbone stage |
+| `check-pr` | the checks report + the fix commits on the PR branch | **Done** — all green, merge is your call · or the open question; from `ship-feature` → its step 7 |
 
 ## Discipline
 

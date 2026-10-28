@@ -62,7 +62,7 @@ The implementer (drives) + the reviewer who signed off in `review-feature`.
    - Nested code repos → one PR per repo that has feature commits, each with its own remote's command. If one PR needs another merged first (the app's e2e runs against the api's default branch), write that order into both PR bodies.
    **Propose** the command and ask whether to create the PR now. Push the feature branch and create it only on the user's yes (or the user runs it and gives you the URL). Never push to the default branch and never merge.
 
-6. **Read every check — fix until green.** For each PR that now exists, run the loop in [`../_shared/pr-checks.md`](../_shared/pr-checks.md): wait for its pipeline, read every check, and for each failing one read the log, find the root cause, fix it on the feature branch, re-run the local gate, commit, push, and read all checks again — until none is failing. Manual / `allow_failure` / skipped jobs are not failures; list them in the report. When the cause is unclear — another repo or merge/deploy order, a flaky or runner failure, a fix that would change the PRD/AC/contract or weaken a test, missing secrets or CI settings — stop and ask with `AskUserQuestion`; never guess. No PR created (the user declined) → skip and say so.
+6. **Read every check — fix until green.** For each PR that now exists, run the [`check-pr`](../check-pr/SKILL.md) skill now, in this session (`/sdlc:check-pr <PR URL>`, with this `<slug>`): it waits for the PR's pipeline, read every check, and for each failing one read the log, find the root cause, fix it on the feature branch, re-run the local gate, commit, push, and read all checks again — until none is failing. Manual / `allow_failure` / skipped jobs are not failures; list them in the report. When the cause is unclear — another repo or merge/deploy order, a flaky or runner failure, a fix that would change the PRD/AC/contract or weaken a test, missing secrets or CI settings — stop and ask with `AskUserQuestion`; never guess. No PR created (the user declined) → skip and say so.
 
 7. **Update the roadmap → Shipped.** Move this feature's item from **Now** to **Shipped** in `docs/roadmap.md`: add the date, the outcome one-liner, a link to `docs/features/<slug>/`, and the PR link/command. Remove the item from the Now table. If `docs/roadmap.md` does not exist → skip and note it (roadmap is optional at this stage).
 
@@ -86,7 +86,7 @@ The implementer (drives) + the reviewer who signed off in `review-feature`.
 - **"Tests pass" ≠ "it works".** Run the actual feature against the PRD's outcomes; green unit tests don't prove the wired system behaves.
 - **Claiming verified when you only compiled.** If the runtime/Docker wasn't available, say what was deferred — don't overstate.
 - **Auto-merging to main / pushing to a shared remote unasked.** Propose the PR; the merge is the team's call. Green checks are not a reason to merge or to turn on auto-merge.
-- **Opening the PR and walking away.** A PR with a red check is not shipped. Read every check, not only the required ones; the forge's result for the latest commit is the truth, not the local gate.
+- **Opening the PR and walking away.** A PR with a red check is not shipped — step 6 runs `check-pr` on every PR created here. Read every check, not only the required ones; the forge's result for the latest commit is the truth, not the local gate.
 - **Making a check green by weakening it.** Loosening an assertion, skipping or deleting a test, `allow_failure` / `continue-on-error`, `[skip ci]` — never. If the test looks wrong, ask.
 - **Guessing when the cause is not in this branch.** A job that runs against another repo's default branch, a merge/deploy order dependency, a flaky runner, a missing secret — ask the user; don't patch around it or retry in a loop.
 - **Fixing only the check you looked at.** Every push starts a new pipeline; read all checks again.
@@ -98,5 +98,5 @@ The implementer (drives) + the reviewer who signed off in `review-feature`.
 
 - [`./templates/changelog.md`](./templates/changelog.md) — changelog scaffold.
 - [`./templates/pr-body.md`](./templates/pr-body.md) — PR description scaffold (forge-agnostic).
-- [`../_shared/pr-checks.md`](../_shared/pr-checks.md) — the read-checks → fix → repeat loop, the exact `gh` / `glab` commands, and the ask-when-unclear cases (step 6).
+- [`../check-pr/SKILL.md`](../check-pr/SKILL.md) — the read-checks → fix → repeat loop, the exact `gh` / `glab` commands, and the ask-when-unclear cases (step 6).
 - [`../_shared/handoff.md`](../_shared/handoff.md) — stage-handoff block format (terminal variant).
