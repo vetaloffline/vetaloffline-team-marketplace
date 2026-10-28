@@ -2,17 +2,17 @@
 
 Read [`../../_shared/socratic-loop.md`](../../_shared/socratic-loop.md) for the canonical 4-state machine (Approve / Edit / Save-as-OQ / Drop), the edits-log schema, the cadence, and the disk-write discipline (in-memory until the section is written). architecture-design supplies only the deltas below.
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Це крок 6 у Protocol — діалог з користувачем по кожній секції SAD. Логіка:
+This is step 6 of the Protocol — a dialogue with the user over each SAD section. The logic:
 
-1. Skill **малює всю секцію відразу** + нумерує рішення всередині.
-2. Питає **по одному рішенню** через `AskUserQuestion`.
-3. Користувач обирає одну з **4 дій з рішенням** (англ. *4-state machine*): **Прийняти** / **Виправити** / **Винести у відкрите питання** (`Save as OQ`) / **Викинути** (`Drop`).
-4. Для кожного **Прийнятого** рішення skill прогоняє **3 питання масштабу удару** (англ. *blast-radius gate*). Якщо хоч 2 з 3 спрацьовують — створюється файл ADR з форматом **MADR** (markdown з заголовком, контекстом, опціями, наслідками).
-5. Skill **пише секцію + ADR-файли + комітить** одним комітом. Більше до цієї секції не повертається — внутрішні протиріччя ловить окремий критик на кроці 7.
+1. The skill **drafts the whole section at once** + numbers the decisions inside it.
+2. It asks **one decision at a time** via `AskUserQuestion`.
+3. The user picks one of **4 actions on a decision** (*4-state machine*): **Approve** / **Edit** / **Save as open question** (`Save as OQ`) / **Drop**.
+4. For each **Approved** decision the skill runs the **3 blast-radius questions** (*blast-radius gate*). If at least 2 of 3 fire, an ADR file is created in the **MADR** format (markdown with a title, context, options, consequences).
+5. The skill **writes the section + ADR files + commits** in one commit. It never returns to that section — internal contradictions are caught by a separate critic at step 7.
 
-§4 **відкривається рішенням Target-surface** (що саме будуємо) — воно гейтить §5-контейнери і всі наступні стадії, тому вирішується першим. На кожну оголошену UI-поверхню йде follow-on UI-architecture рішення.
+§4 **opens with the Target-surface decision** (what exactly we build) — it gates the §5 containers and every later stage, so it is decided first. Every declared UI surface gets a follow-on UI-architecture decision.
 
 ---
 
@@ -52,9 +52,9 @@ Each section holds a mix of these; the same 4-state machine applies to all — t
 - **Risk entry** — §11 Risks. Auto-generated from edits-log + PRD §8 Open Questions + the Step-3 brownfield scan/map gotchas. User Approves verbatim or `Edit`-s severity/mitigation/owner.
 - **Open-architectural-decision row** (special case of Risk entry) — created automatically from any `Save as Open Question` resolution in earlier sections. Skill writes the §11 row at the moment of the OQ resolution; user does NOT see a separate question for it (already approved when they picked `Save as Open Question`). Severity column carries the literal `Open question`.
 
-## 4 дії з рішенням — 4-state machine (uniform across all decision-types)
+## 4 actions on a decision — 4-state machine (uniform across all decision-types)
 
-> **UA-перифраза.** «4-state machine» — це 4 можливі дії з кожним рішенням: **Прийняти** (Approve) / **Виправити** (Edit) / **Винести у відкрите питання** (Save as OQ) / **Викинути** (Drop). `Cancel` і `Reject` — синоніми Drop. Кожна дія має чітку механіку нижче.
+> **In plain words.** The «4-state machine» is the 4 possible actions on each decision: **Approve** / **Edit** / **Save as open question** (Save as OQ) / **Drop**. `Cancel` and `Reject` are synonyms of Drop. Each action has a precise mechanic below; labels are asked in the user's language (→ [`../../_shared/ask-style.md`](../../_shared/ask-style.md) → *Language*).
 
 
 - **`Approve`** → keep decision verbatim. No edits-log entry. **Run blast-radius gate** (Step 6d). If it scores 2-of-3, spawn an ADR (see SKILL.md and [blast-radius-heuristic.md](./blast-radius-heuristic.md)). Move to next decision.

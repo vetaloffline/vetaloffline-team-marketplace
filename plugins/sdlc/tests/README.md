@@ -1,79 +1,79 @@
 # sdlc plugin tests
 
-Manual test fixtures для high-blast-radius skills. Без automated runner для v3.0 — кожен fixture запускається вручну і diff-иться з очікуваним output. CI-runner — backlog.
+Manual test fixtures for high-blast-radius skills. No automated runner for v3.0 — each fixture is run by hand and diffed against the expected output. A CI runner is backlog.
 
 ## Structure
 
 ```
 tests/
-├── README.md               # цей файл
+├── README.md               # this file
 ├── rubric.md               # eval criteria (DoD checks per skill)
 └── fixtures/
     ├── intake/
-    │   ├── 01-rate-limit/   # full intake flow з ADR + CONTEXT
-    │   ├── 02-typo-fix/     # XS feature — мінімальний brief
-    │   └── 03-multi-context/  # multi-context repo з CONTEXT-MAP.md
+    │   ├── 01-rate-limit/   # full intake flow with ADR + CONTEXT
+    │   ├── 02-typo-fix/     # XS feature — minimal brief
+    │   └── 03-multi-context/  # multi-context repo with CONTEXT-MAP.md
     ├── propose-adr/
     │   ├── 01-pass-mp/      # 3/3 PASS → ADR stub
-    │   └── 02-fail-mp/      # MP fail → refuse з reason
+    │   └── 02-fail-mp/      # MP fail → refuse with reason
     ├── classify-size/
-    │   └── 01-classify-s/   # M-сценарій рухається до S
+    │   └── 01-classify-s/   # an M scenario moves down to S
     └── prep-review/
-        └── 01-review-25/    # ≤25 actionable items з WHERE-context
+        └── 01-review-25/    # ≤25 actionable items with WHERE-context
 ```
 
-Кожна fixture директорія має:
-- `input.md` — user message + (опц.) pre-existing artefacts.
-- `expected/` — directory з очікуваними створеними/зміненими файлами.
-- `notes.md` — (опц.) ключові edge cases, що skill повинен спіймати.
+Each fixture directory has:
+- `input.md` — user message + (optional) pre-existing artefacts.
+- `expected/` — a directory with the expected created/changed files.
+- `notes.md` — (optional) key edge cases the skill must catch.
 
 ## Running a fixture manually
 
 ```bash
-# 1. Підготовка — copy pre-existing artefacts (якщо є)
+# 1. Preparation — copy pre-existing artefacts (if any)
 SLUG=rate-limit-test
 mkdir -p delivery/$SLUG
 cp -r plugin/tests/fixtures/intake/01-rate-limit/pre-existing/* delivery/$SLUG/ 2>/dev/null
 
-# 2. Read input.md і запусти skill
+# 2. Read input.md and run the skill
 cat plugin/tests/fixtures/intake/01-rate-limit/input.md
 # Open Claude Code, paste input as user message, observe behavior.
 
-# 3. Diff output проти expected
+# 3. Diff the output against expected
 diff -r delivery/$SLUG/ plugin/tests/fixtures/intake/01-rate-limit/expected/
 
-# 4. Score за rubric.md
+# 4. Score by rubric.md
 ```
 
 ## Scoring per fixture
 
 Use `rubric.md` to score:
-- ✅ Output exists у `docs/features/<slug>/`.
+- ✅ Output exists in `docs/features/<slug>/`.
 - ✅ DoD checked (per skill's `## Definition of Done`).
 - ✅ No anti-patterns triggered.
 - ✅ Commit proposed correctly (right message format).
 
-Pass = всі 4. Fail на будь-якому — fixture caught a regression.
+Pass = all 4. A fail on any of them — the fixture caught a regression.
 
 ## Adding a new fixture
 
 1. Pick critical skill (intake / propose-adr / classify-size / prep-review).
 2. Define scenario name (kebab-case, descriptive): `04-conflict-term-resolution`, `02-fail-mp-no-finalists`.
 3. Create `fixtures/<skill>/<scenario>/`:
-   - `input.md` — user message + (опц.) pre-existing artefacts list.
+   - `input.md` — user message + (optional) list of pre-existing artefacts.
    - `expected/` — copy from manual run that you trust.
    - `notes.md` — what edge case this catches.
 4. Update this README's structure tree.
 
 ## Why not automate?
 
-Skills використовують AskUserQuestion і LLM-generation, які не deterministic. Snapshot testing вимагає mock LLM або record-replay. Backlog: explore `claude --eval` mode коли стане доступним; meanwhile manual diff достатньо для регресій критичних flow.
+Skills use AskUserQuestion and LLM generation, which are not deterministic. Snapshot testing needs a mock LLM or record-replay. Backlog: explore `claude --eval` mode when it becomes available; meanwhile a manual diff is enough for regressions of critical flows.
 
 ## Coverage
 
 | Skill | Fixtures | High-blast-radius reason |
 |-------|---------:|---------------------------|
-| intake | 3 | Composite — bug у §A впливає на §B, §C, §D, §E |
-| propose-adr | 2 | MP-threshold subjective → false PASS може спамити ADR-ами |
-| classify-size | 1 | Wrong size → wrong skip-matrix у 4 wrappers |
-| prep-review | 1 | GATE 16 — без checklist review нерівномірний |
+| intake | 3 | Composite — a bug in §A affects §B, §C, §D, §E |
+| propose-adr | 2 | The MP threshold is subjective → a false PASS can spam ADRs |
+| classify-size | 1 | Wrong size → wrong skip-matrix in 4 wrappers |
+| prep-review | 1 | GATE 16 — without a checklist the review is uneven |

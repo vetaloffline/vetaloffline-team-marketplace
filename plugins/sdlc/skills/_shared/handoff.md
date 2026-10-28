@@ -6,18 +6,18 @@
 > exists because a bare «Next: …» line is hard to act on — the user can't tell what changed, which
 > files to open, or what to run next without scrolling back.
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Кожен крок (skill) наприкінці **завжди** друкує однаковий хендоф-блок із трьох секцій:
+At the end, every step (skill) **always** prints the same handoff block with three sections:
 
-1. **What I did** — що стадія зробила + який коміт запропонувала (не змушуй гортати вгору).
-2. **Review before continuing** — посилання на файли, які стадія створила/змінила і які треба
-   глянути на цьому геті (реальні `docs/features/<slug>/…` шляхи — клікабельні/копіювані).
-3. **Run next** — спершу `/clear` (обов'язково для forward-переходу — наступна стадія перечитує
-   все з диска), потім наступна команда `/sdlc:<next> <slug>` у **fenced-блоці** (копіюється в один
-   клік) + альтернатива-пропуск, якщо вона є.
+1. **What I did** — what the stage did + which commit it proposed (don't make the user scroll up).
+2. **Review before continuing** — links to the files the stage created/changed that should be
+   checked at this gate (real `docs/features/<slug>/…` paths — clickable/copyable).
+3. **Run next** — first `/clear` (mandatory for a forward transition — the next stage re-reads
+   everything from disk), then the next command `/sdlc:<next> <slug>` in a **fenced block** (copied in one
+   click) + a skip alternative, if there is one.
 
-Це прибирає головний біль: «погано виводить, незручно копіювати і перевіряти».
+This removes the main pain: «the output is poor, hard to copy and to check».
 
 ---
 

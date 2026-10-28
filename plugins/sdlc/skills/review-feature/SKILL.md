@@ -37,21 +37,21 @@ The `target_surfaces` declared in `sad.md` frontmatter gate the AC-trace: a UI s
 ACs must trace to UI-layer tasks and component / e2e-through-UI tests, not only backend ones →
 [`../_shared/surfaces.md`](../_shared/surfaces.md).
 
-## Як це читати (короткий вступ)
+## How to read this (short intro)
 
-Це інструкція для агента, який запускає skill. Тут **5-крокова процедура** (Protocol нижче):
-перевір, що є що рев'ювати → відправ незалежного reviewer → зібери cited findings → резолюй
-кожен з юзером → запиши вердикт і хендоф.
+These are instructions for the agent that runs the skill. There is a **5-step procedure** (Protocol below):
+check there is something to review → dispatch an independent reviewer → collect cited findings → resolve
+each one with the user → write the verdict and the handoff.
 
-**Словничок термінів:**
+**Glossary:**
 
-- *clean context* — reviewer не бачить попередньої розмови; він читає все з диска заново.
-- *AC (Acceptance Criterion)* — умова приймання: конкретний перевірний результат з PRD §5.
-- *SDLC-AC trailer* — рядок `SDLC-AC: AC-N` у git-коміті, що стверджує: цей commit задовольняє цей AC.
-- *end-to-end AC trace* — трейс кожного AC наскрізь: PRD §5 → sequences (sad.md §6) → data-model → api → tasks → code+test.
-- *target_surfaces* — задекларовані поверхні в `sad.md` frontmatter; review-feature читає їх, щоб знати, чи є UI-шар у ланцюжку трейсу.
-- *stage-1* — AC-комплаєнс і end-to-end трейс; блокує ship до виправлення.
-- *stage-2* — якість коду (конвенції, edge cases, безпека тощо); зазвичай не блокує.
+- *clean context* — the reviewer doesn't see the earlier conversation; it reads everything from disk again.
+- *AC (Acceptance Criterion)* — a concrete, checkable outcome from PRD §5.
+- *SDLC-AC trailer* — the line `SDLC-AC: AC-N` in a git commit, claiming: this commit satisfies this AC.
+- *end-to-end AC trace* — a trace of each AC all the way through: PRD §5 → sequences (sad.md §6) → data-model → api → tasks → code+test.
+- *target_surfaces* — the surfaces declared in the `sad.md` frontmatter; review-feature reads them to know whether there is a UI layer in the trace chain.
+- *stage-1* — AC compliance and the end-to-end trace; blocks ship until fixed.
+- *stage-2* — code quality (conventions, edge cases, security, etc.); usually doesn't block.
 
 ## Owner
 

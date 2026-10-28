@@ -24,7 +24,7 @@ Options:
   - label: "Reword"
     description: "You type the new wording in one go; skill regenerates US-03 with your wording and asks once more (last call — second answer is final)."
   - label: "Save as Open Question"
-    description: "Skill removes US-03 from §4 and adds «- [ ] US-03 (text) — чи валідна? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop with a warning."
+    description: "Skill removes US-03 from §4 and adds «- [ ] US-03 (text) — is it valid? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop with a warning."
   - label: "Drop"
     description: "Skill deletes US-03, renumbers later stories (US-04 → US-03), and AC tagged with US-03 are reassigned or dropped — skill will ask which."
 ```
@@ -33,7 +33,7 @@ After `Save as Open Question`, the follow-up `AskUserQuestion`:
 
 ```
 Question:
-  US-03 is migrating to §8 Open Questions. Provide owner and due (YYYY-MM-DD or stage trigger like "перед 6.9"). Both are mandatory — without them the migration downgrades to Drop.
+  US-03 is migrating to §8 Open Questions. Provide owner and due (YYYY-MM-DD or stage trigger like "before 6.9"). Both are mandatory — without them the migration downgrades to Drop.
 
 Options:
   - label: "Provide owner + due"
@@ -61,7 +61,7 @@ Options:
   - label: "Reword GWT"
     description: "You type the new Given/When/Then in one go; skill regenerates AC-04 with your wording and asks once more (last call)."
   - label: "Save as Open Question"
-    description: "Skill removes AC-04 from §5 and adds «- [ ] AC-04 (text) — чи цей AC валідний? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. If coverage gate breaks (this was the only domain-invariant AC), skill regenerates a replacement of the same type."
+    description: "Skill removes AC-04 from §5 and adds «- [ ] AC-04 (text) — is this AC valid? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. If coverage gate breaks (this was the only domain-invariant AC), skill regenerates a replacement of the same type."
   - label: "Drop"
     description: "Skill deletes AC-04 and renumbers later AC. If AC-04 was the only domain-invariant for US-03, skill regenerates a replacement of the same coverage type and asks about it as an extra item."
   - label: "Add another AC"
@@ -82,7 +82,7 @@ Options:
   - label: "Edit target"
     description: "You type the new numeric target (e.g. ≤ 400 ms); skill updates the row and asks once more (last call)."
   - label: "Save as Open Question"
-    description: "Skill removes the row from §6 and adds «- [ ] NFR row «<aspect>» — чи цей таргет валідний? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop."
+    description: "Skill removes the row from §6 and adds «- [ ] NFR row «<aspect>» — is this target valid? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop."
   - label: "Drop"
     description: "Skill deletes the row from §6. No replacement (NFR is recommended-list, not coverage-gated)."
 ```
@@ -101,7 +101,7 @@ Options:
   - label: "Edit baseline/target"
     description: "You type new baseline / target / timeframe; skill regenerates the KPI line and asks once more (last call)."
   - label: "Save as Open Question"
-    description: "Skill removes the KPI from §7 and adds «- [ ] KPI «<name>» — чи цей KPI валідний? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop."
+    description: "Skill removes the KPI from §7 and adds «- [ ] KPI «<name>» — is this KPI valid? — owner: <you-type>, due: <you-type>» to §8. Skill asks owner+due next. Without both, the resolution downgrades to Drop."
   - label: "Drop"
     description: "Skill deletes the KPI from §7. No replacement (KPIs are recommended-list with a ≥3 floor; if drop takes count under 3, skill regenerates one extra KPI from a remaining RICE driver)."
 ```
@@ -163,49 +163,49 @@ Options:
     description: "Skill deletes the item and renumbers later items."
 ```
 
-## Junior-friendly Ukrainian explanations (mandatory from 2026-05-23)
+## Junior-friendly explanations in the user's language (mandatory from 2026-05-23)
 
-Every `AskUserQuestion` у цьому skill-у формулюється так, щоб **junior-розробник або PM без технічного background** міг зрозуміти суть кожного PRD-item (US / AC / NFR / KPI), різницю між опціями і наслідки вибору — без помічника поряд. Старий шаблон («1-sentence framing», 4-word labels) deprecated.
+Every `AskUserQuestion` in this skill is worded so that **a junior developer or a PM without a technical background** can understand the substance of each PRD item (US / AC / NFR / KPI), the difference between the options and the consequences of the choice — without a helper next to them. The old template («1-sentence framing», 4-word labels) is deprecated.
 
 ### Mandatory shape
 
-1. **Українська мова всюди** — labels + descriptions. Технічні ідентифікатори (US-NN, AC-NN, NFR, KPI, GWT, AsyncAPI, OpenAPI) залишаються англійською — це назви; але «дії» опцій — українською («Прийняти як є», «Переписати», «Перенести у §8 OQ», «Видалити», «Додати ще один AC»).
+1. **Ask in the user's language** — per [`../../_shared/ask-style.md`](../../_shared/ask-style.md) → *Language*: the question, labels and descriptions follow the language the user converses in (the session's configured response language, else the user's own recent messages), never the language of the examples here. Technical identifiers (US-NN, AC-NN, NFR, KPI, GWT, AsyncAPI, OpenAPI) stay as they are — they are names; the option *actions* are translated like the rest.
 
-2. **`question` поле — 3-4 речення** з трьох блоків:
-   - **ПОВНИЙ ТЕКСТ item-у** verbatim (US text, AC GWT, NFR row, KPI line, critic finding) — як було
-   - **КОНТЕКСТ + ЧОМУ ВАЖЛИВО** — звідки взявся цей item (з якого джерела idea-brief / interview / NFR), який user-сценарій або quality-vector він покриває, що зривається якщо item неправильний
-   - **ЯКА КОНКРЕТНА ДУМКА ПОТРІБНА** — на що дивитися перед вибором (формулювання? коректність GWT? число у NFR? owner у KPI?)
+2. **`question` field — 3-4 sentences** in three blocks:
+   - **THE FULL TEXT of the item** verbatim (US text, AC GWT, NFR row, KPI line, critic finding) — as it was
+   - **CONTEXT + WHY IT MATTERS** — where the item came from (which source: idea-brief / interview / NFR), which user scenario or quality vector it covers, what breaks if the item is wrong
+   - **WHAT SPECIFIC THOUGHT IS NEEDED** — what to look at before choosing (the wording? GWT correctness? the number in the NFR? the owner in the KPI?)
 
-3. **Option `description` — 3-5 речень** із трьох обов'язкових елементів:
-   - **Що технічно станеться у PRD**: конкретно — який рядок зміниться, які later items постраждають (renumbering, AC-теги переприсвоються, KPI без owner downgrade-иться)
-   - **Що ця опція реально означає** простими словами, без жаргону:
-     - Не «GWT-form» → «формат Given/When/Then: «Дано: користувач залогінений; Коли: натискає Submit; Тоді: повертається 201 і ресурс у БД»»
-     - Не «AC tagged with US-03 are reassigned or dropped» → «всі AC, які зараз посилаються на US-03 (можна побачити у `AC-NN | US: US-03 | ...` рядках), або переходять на інший US, або видаляються разом — skill спитає тебе про кожен окремо»
-     - Не «cursor pagination» → «передача останнього бачаного ID клієнту»
-     - Не «idempotent operation» → «можна викликати ту саму дію кілька разів і результат буде той самий — повторний publish на already-published course не змінює дані»
-   - **Hidden trade-off** — якщо опція має наслідок, який PM/junior міг би не побачити (напр. «Drop on US-03 видалить ще 4 AC; всі вони пов'язані з core-flow») — згадати це **прямо у description**
+3. **Option `description` — 3-5 sentences** with three mandatory elements:
+   - **What technically happens in the PRD**: concretely — which line changes, which later items are affected (renumbering, AC tags reassigned, a KPI without an owner downgraded)
+   - **What this option really means** in plain words, without jargon:
+     - Not «GWT-form» → «the Given/When/Then format: «Given: the user is logged in; When: they press Submit; Then: 201 is returned and the resource is in the DB»»
+     - Not «AC tagged with US-03 are reassigned or dropped» → «every AC that currently refers to US-03 (visible in the `AC-NN | US: US-03 | ...` rows) either moves to another US or is deleted along with it — the skill asks you about each one separately»
+     - Not «cursor pagination» → «sending the client the last ID it saw»
+     - Not «idempotent operation» → «the same action can be called several times and the result stays the same — publishing an already-published course again doesn't change the data»
+   - **Hidden trade-off** — if the option has a consequence a PM/junior might not see (e.g. «Drop on US-03 deletes 4 more ACs; all of them belong to the core flow») — state it **right in the description**
 
-### Заборонено
+### Forbidden
 
-- Стислі англомовні labels («Approve as-is», «Reword», «Drop»)
-- Однорядкові descriptions
-- Технічні терміни без розшифровки (GWT, cursor, idempotent, NFR, SLA, RPO/RTO, etc.)
-- Trade-off-и, заховані у follow-up
+- Terse labels («Approve as-is», «Reword», «Drop») — in any language
+- One-line descriptions
+- Technical terms without a gloss (GWT, cursor, idempotent, NFR, SLA, RPO/RTO, etc.)
+- Trade-offs hidden in a follow-up
 
-### Контр-приклад (deprecated shape)
+### Counter-example (deprecated shape)
 
 ```
 - label: "Approve as-is"
   description: "Skill keeps US-03 verbatim and moves to the next item."
 ```
 
-### Правильно (mandatory shape)
+### Correct (mandatory shape)
 
 ```
-- label: "Прийняти US-03 як є"
-  description: "Skill зберігає US-03 verbatim у §4 PRD і переходить до US-04 без додаткових follow-up-ів. Це означає, що формулювання ролі (editor), наміру (publish article) і outcome (readers access) фіксуються як baseline — пізніше зміни тільки через перезапуск skill-у або ручне редагування файлу. AC, які будуть пов'язані з US-03 (через тег `US: US-03` у AC-таблиці), залишаються валідними. Якщо у idea-brief §13 Recommendation роль «editor» виявиться застарілою — це буде підняте Phase-8 critic-ом як strategic-vector drift."
+- label: "Accept US-03 as is"
+  description: "The skill keeps US-03 verbatim in PRD §4 and moves on to US-04 without extra follow-ups. This means the wording of the role (editor), the intent (publish article) and the outcome (readers access) are fixed as the baseline — later changes only by re-running the skill or editing the file by hand. ACs linked to US-03 (via the `US: US-03` tag in the AC table) stay valid. If in idea-brief §13 Recommendation the «editor» role turns out to be outdated, the Phase-8 critic will raise it as strategic-vector drift."
 ```
 
 ### Why
 
-Користувач у PRD-фазі — найчастіше PM без deep technical background, або junior dev, який щойно прийшов у команду. Англомовні стислі питання змушують його зупиняти роботу для уточнень, що зриває Socratic-cadence і подвоює час на PRD. Дослівна цитата фідбеку 2026-05-23: «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці» (контекст — sdlc:architecture-design, з вимогою «закласти не тільки в архітектуру а і в бриф ідею і в врайт прд»).
+The user in the PRD phase is most often a PM without a deep technical background, or a junior dev who just joined the team. Terse questions force them to stop and ask for clarification, which breaks the Socratic cadence and doubles the time spent on the PRD. Feedback from 2026-05-23 (translated): «the explanations must be even clearer, for people who are literally juniors in development» (context — sdlc:architecture-design, with the request to «build it not only into architecture but also into the idea brief and write-prd»).

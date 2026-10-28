@@ -20,10 +20,10 @@ target_surfaces: []  # filled in §4 — subset of: backend-service | web-fronte
 
 ## 1. Introduction and goals
 
-<!-- 🎯 Навіщо: стабільна памʼять про «що + три головні якості + хто зацікавлений».     -->
-<!--           Через рік ніхто не згадає на словах, ЯКІ ТРИ ЯКОСТІ для системи критичні. -->
-<!-- 📋 Що писати: 1 абзац intent + 3 рядки топ-3 якості + таблиця stakeholders.        -->
-<!-- 📌 Приклад: «QG-1: швидкість редагування блоку p95 ≤500 мс»                         -->
+<!-- 🎯 Why: a stable memory of «what + the three main qualities + who has a stake».       -->
+<!--           A year later nobody will remember out loud WHICH THREE QUALITIES are critical. -->
+<!-- 📋 What to write: 1 paragraph of intent + 3 lines of top-3 qualities + a stakeholders table. -->
+<!-- 📌 Example: «QG-1: block editing speed p95 ≤500 ms»                                    -->
 
 **Intent.** <One paragraph from PRD §Goals — what we're building and for whom.>
 
@@ -46,10 +46,10 @@ target_surfaces: []  # filled in §4 — subset of: backend-service | web-fronte
 
 ## 2. Constraints
 
-<!-- 🎯 Навіщо: §4 (стратегія) працює тільки коли §2 зафіксувала, ЩО ВЖЕ ЗАФІКСОВАНО:    -->
-<!--           стек, версії, дедлайн, регуляторні вимоги. Це вхід, не вихід.             -->
-<!-- 📋 Що писати: чотири блоки — Технічні / Організаційні / Конвенції / Регуляторні.     -->
-<!-- 📌 Приклад: «Postgres 18» (не «Postgres»); «дедлайн Q3 — жорсткий» (не «бажано»).    -->
+<!-- 🎯 Why: §4 (strategy) only works when §2 has recorded WHAT IS ALREADY FIXED:          -->
+<!--           stack, versions, deadline, regulatory requirements. This is input, not output. -->
+<!-- 📋 What to write: four blocks — Technical / Organizational / Conventions / Regulatory.  -->
+<!-- 📌 Example: «Postgres 18» (not «Postgres»); «Q3 deadline — hard» (not «preferably»).    -->
 
 **Technical.**
 - <Language + version, e.g. Go 1.26>
@@ -72,11 +72,11 @@ target_surfaces: []  # filled in §4 — subset of: backend-service | web-fronte
 
 ## 3. Context and scope
 
-<!-- 🎯 Навіщо: малює КОРДОН СИСТЕМИ — хто з нею говорить ззовні, де закінчується зона довіри. -->
-<!--           Без §3 §5 і §8 (авторизація) розпливаються — неясно, що «всередині», а що «зовні». -->
-<!-- 📋 Що писати: 2-3 речення бізнес-контексту + таблиця зовнішніх систем + Mermaid C4Context. -->
-<!-- 📌 Приклад: «зовнішні — нема (свідома відмова від third-party у v1)» — це теж рішення.   -->
-<!-- Кордон довіри (trust boundary) — лінія, за якою ти не довіряєш даним без перевірки.       -->
+<!-- 🎯 Why: draws the SYSTEM BOUNDARY — who talks to it from outside, where the trust zone ends. -->
+<!--           Without §3, §5 and §8 (authorization) blur — it's unclear what is «inside» and what is «outside». -->
+<!-- 📋 What to write: 2-3 sentences of business context + a table of external systems + Mermaid C4Context. -->
+<!-- 📌 Example: «external — none (a deliberate refusal of third parties in v1)» — that is a decision too. -->
+<!-- Trust boundary — the line past which you don't trust data without checking it.          -->
 
 <Business context in 2-3 sentences. What the system does for whom.>
 
@@ -104,15 +104,15 @@ C4Context
 
 ## 4. Solution strategy
 
-<!-- 🎯 Навіщо: 3-4 СТРАТЕГІЧНІ СТОВПИ, з яких потім ростуть усі ADR. Без §4 кожен ADR    -->
-<!--           виглядає випадковим — нема зонтика. ⭐ Найгустіша секція — тут ADR-gate    -->
-<!--           спрацьовує майже завжди (рішення незворотні + мульти-модульні).            -->
-<!-- 📋 Що писати: спершу Target surface(s), потім 3-4 стратегічні вибори.                -->
-<!--           На кожен — заголовок + 2-3 речення rationale.                              -->
-<!-- 📌 ПЕРШЕ рішення §4 — Target surface(s): ЩО САМЕ будуємо. Записується у frontmatter   -->
-<!--           target_surfaces: [...] і гейтить §5 (один контейнер на поверхню) + усі       -->
-<!--           наступні стадії. Деривиться з PRD §1 «для кого» + §4 ролей. → _shared/surfaces.md -->
-<!-- 📌 Приклад: «Зберігати урок як таблицю блоків» — стовп, з якого виросло ADR-0001.    -->
+<!-- 🎯 Why: 3-4 STRATEGIC PILLARS that every ADR later grows from. Without §4 every ADR   -->
+<!--           looks random — there is no umbrella. ⭐ The densest section — the ADR gate    -->
+<!--           fires here almost always (decisions are irreversible + multi-module).         -->
+<!-- 📋 What to write: first the Target surface(s), then 3-4 strategic choices.             -->
+<!--           For each — a heading + 2-3 sentences of rationale.                            -->
+<!-- 📌 The FIRST §4 decision — Target surface(s): WHAT EXACTLY we build. Written into the frontmatter -->
+<!--           target_surfaces: [...] and gates §5 (one container per surface) + every       -->
+<!--           later stage. Derived from PRD §1 «for whom» + the §4 roles. → _shared/surfaces.md -->
+<!-- 📌 Example: «Store a lesson as a table of blocks» — the pillar ADR-0001 grew from.      -->
 
 **Target surface(s) (the first decision — what's being built):** `<e.g. [backend-service, web-frontend]>`
 <!-- Mirror this list into the frontmatter `target_surfaces`. For each declared UI surface          -->
@@ -131,15 +131,15 @@ Each tactical decision in later sections should be traceable to one of these str
 
 ## 5. Building block view
 
-<!-- 🎯 Навіщо: ВНУТРІШНЯ ДЕКОМПОЗИЦІЯ — модулі, контейнери, БД. Статична топологія:   -->
-<!--           хто з ким може говорити. Без §5 §6 (сценарії) не має словника учасників. -->
-<!-- 📋 Що писати: 1 абзац про стиль (шари/гексагональна/clean/на подіях) +            -->
-<!--           дерево папок + Mermaid C4Container.                                       -->
-<!-- 📌 ОДИН Container на кожну оголошену target_surface (frontmatter): fullstack        -->
+<!-- 🎯 Why: the INTERNAL DECOMPOSITION — modules, containers, DBs. The static topology:   -->
+<!--           who may talk to whom. Without §5, §6 (scenarios) has no vocabulary of participants. -->
+<!-- 📋 What to write: 1 paragraph on the style (layers/hexagonal/clean/event-driven) +    -->
+<!--           a folder tree + Mermaid C4Container.                                         -->
+<!-- 📌 ONE Container per declared target_surface (frontmatter): fullstack                -->
 <!--           [backend-service, web-frontend] = backend-API container + web/SPA container; -->
-<!--           [backend-service, mobile-app] = API + mobile app. Container(web, …) нижче — -->
-<!--           лише приклад однієї поверхні; додай/заміни під оголошене у §4. → _shared/surfaces.md -->
-<!-- 📌 Приклад: «web-app, content-api, media-worker, postgres, s3, cdn».                -->
+<!--           [backend-service, mobile-app] = API + mobile app. Container(web, …) below is -->
+<!--           just an example of one surface; add/replace it to match what §4 declared. → _shared/surfaces.md -->
+<!-- 📌 Example: «web-app, content-api, media-worker, postgres, s3, cdn».                   -->
 
 <One paragraph: layered / hexagonal / clean / event-driven. Why.>
 
@@ -178,15 +178,15 @@ C4Container
 
 ## 6. Runtime view
 
-<!-- 🎯 Навіщо: ПОТІК У RUNTIME для 1-2 критичних сценаріїв. Хто з ким коли і у якому     -->
-<!--           порядку говорить. Без §6 §5 — лише купа коробок без життя.                  -->
-<!-- 📋 Що писати: Mermaid sequenceDiagram. Учасники — імена з §5 (не вигадуй нові!).      -->
-<!--           Повідомлення семантичні («складає чорновик»), БЕЗ HTTP-методів/шляхів —     -->
-<!--           ендпоінт-рівневі sequence-діаграми зʼявляться у stage 06 (api-forge).        -->
-<!-- ⏳ RESERVED FOR SEQUENCES: architecture-design сіє лише primary flow(s) тут.          -->
-<!--           complete-sequence-diagrams (stage 06) ДОПОВНЮЄ §6 кожним критичним flow /    -->
-<!--           кожним §5 AC — без обмеження. Не намагайся покрити все тут.                  -->
-<!-- 📌 Приклад: «methodist → web-app: складає чорновик → web-app → content-api: зберегти». -->
+<!-- 🎯 Why: the RUNTIME FLOW for 1-2 critical scenarios. Who talks to whom, when and in what -->
+<!--           order. Without §6, §5 is just a pile of boxes with no life.                     -->
+<!-- 📋 What to write: a Mermaid sequenceDiagram. Participants — names from §5 (don't invent new ones!). -->
+<!--           Messages are semantic («drafts a lesson»), WITHOUT HTTP methods/paths —      -->
+<!--           endpoint-level sequence diagrams appear at stage 06 (api-forge).              -->
+<!-- ⏳ RESERVED FOR SEQUENCES: architecture-design seeds only the primary flow(s) here.      -->
+<!--           complete-sequence-diagrams (stage 06) EXTENDS §6 with every critical flow /   -->
+<!--           every §5 AC — with no cap. Don't try to cover everything here.                -->
+<!-- 📌 Example: «methodist → web-app: drafts a lesson → web-app → content-api: save».       -->
 
 **Critical flow 1: <flow name>**
 
@@ -210,11 +210,11 @@ sequenceDiagram
 
 ## 7. Deployment view
 
-<!-- 🎯 Навіщо: ТОПОЛОГІЯ, яку DevOps має знати без читання Helm-чартів — скільки реплік,  -->
-<!--           де живе фоновий обробник, ПРИ ЯКИХ ЧИСЛАХ масштабуємось.                     -->
-<!-- 📋 Що писати: 2-3 речення про топологію + метрики + алерти + конкретні числа-пороги.   -->
-<!-- 📌 Приклад: «500 IC → партиціонування за кварталом» (не «при зростанні подумаємо»).    -->
-<!-- 🎯 Можна N/A для XS/S функцій, що переюзають існуюче розгортання без змін.            -->
+<!-- 🎯 Why: the TOPOLOGY DevOps must know without reading Helm charts — how many replicas,  -->
+<!--           where the background worker lives, AT WHAT NUMBERS we scale.                   -->
+<!-- 📋 What to write: 2-3 sentences on the topology + metrics + alerts + concrete threshold numbers. -->
+<!-- 📌 Example: «500 IC → partition by quarter» (not «we'll think about it when it grows»).  -->
+<!-- 🎯 May be N/A for XS/S features that reuse the existing deployment unchanged.            -->
 
 <Topology in 2-3 sentences. Where it runs (k8s / VM / serverless), replicas, scaling thresholds.>
 
@@ -231,12 +231,12 @@ sequenceDiagram
 
 ## 8. Crosscutting concepts
 
-<!-- 🎯 Навіщо: НАСКРІЗНІ ПАТЕРНИ, які перетинають кілька модулів: логування, помилки,    -->
-<!--           авторизація, ID strategy, outbox, кеш. ⭐ Друга найгустіша секція.          -->
-<!--           Якщо патерн всередині одного модуля — він НЕ сюди. Якщо це конвенція        -->
-<!--           проєкту в цілому — у CLAUDE.md.                                              -->
-<!-- 📋 Що писати: таблиця концепт / конвенція / де визначено. Один рядок на концепт.      -->
-<!-- 📌 Приклад: «UUID v7 (час+випадковий, сортується) у app-layer» — як default з CLAUDE.md. -->
+<!-- 🎯 Why: CROSSCUTTING PATTERNS that span several modules: logging, errors,           -->
+<!--           authorization, ID strategy, outbox, cache. ⭐ The second densest section.    -->
+<!--           If a pattern lives inside one module, it does NOT go here. If it is a        -->
+<!--           convention of the whole project, it goes in CLAUDE.md.                       -->
+<!-- 📋 What to write: a concept / convention / where-defined table. One row per concept.  -->
+<!-- 📌 Example: «UUID v7 (time+random, sortable) in the app layer» — as the default from CLAUDE.md. -->
 
 | Concept | Convention | Where defined |
 |---|---|---|
@@ -250,10 +250,10 @@ sequenceDiagram
 
 ## 9. Architecture decisions
 
-<!-- 🎯 Навіщо: ЗВОРОТНИЙ ІНДЕКС на папку adr/. `ls adr/` дає файли, §9 дає семантику —    -->
-<!--           чому вони існують, до якого зрізу SAD привʼязані, у якому статусі.           -->
-<!-- 📋 Що писати: таблиця з 4 колонками. Один рядок на ADR. Mixed status — це OK.         -->
-<!-- 📌 Приклад: «0001 | Зберігати урок як таблицю блоків | Accepted | §4».                -->
+<!-- 🎯 Why: a REVERSE INDEX of the adr/ folder. `ls adr/` gives the files, §9 gives the meaning — -->
+<!--           why they exist, which SAD slice they are attached to, what status they have.  -->
+<!-- 📋 What to write: a table with 4 columns. One row per ADR. Mixed status is OK.          -->
+<!-- 📌 Example: «0001 | Store a lesson as a table of blocks | Accepted | §4».                -->
 
 | # | Title | Status | Section |
 |---|---|---|---|
@@ -264,12 +264,12 @@ ADR files live under `docs/features/<slug>/adr/NNNN-<title>.md`.
 
 ## 10. Quality requirements
 
-<!-- 🎯 Навіщо: ДЕРЕВО ЯКОСТЕЙ (Quality Tree) — беремо мету з §1 і розкладаємо на          -->
-<!--           конкретні листя: тести, метрики, конфіги, drill-и. ⭐ Без §10 §1 — це       -->
-<!--           маніфест. З §10 кожна декларація мапиться на щось, ЩО МОЖНА ДОВЕСТИ.        -->
-<!-- 📋 Що писати: на кожну якість з §1 — When / Then / How verify. Числа з PRD §6 NFR     -->
-<!--           ДОСЛІВНО (не округлюй p95 ≤250мс до ≤300мс — це F6-помилка критика).        -->
-<!-- 📌 Приклад: «p95 ≤500 мс на UPDATE блоку, перевіримо k6 load test 100 req/s».        -->
+<!-- 🎯 Why: the QUALITY TREE — take the goal from §1 and break it into                    -->
+<!--           concrete leaves: tests, metrics, configs, drills. ⭐ Without §10, §1 is just a -->
+<!--           manifesto. With §10 every declaration maps to something THAT CAN BE PROVEN.    -->
+<!-- 📋 What to write: for each quality from §1 — When / Then / How verify. Numbers from PRD §6 NFR -->
+<!--           VERBATIM (don't round p95 ≤250ms up to ≤300ms — that is a critic F6 error).     -->
+<!-- 📌 Example: «p95 ≤500 ms per block UPDATE, verified by a k6 load test at 100 req/s».     -->
 
 Each top-3 goal from §1 expanded into a full scenario:
 
@@ -290,13 +290,13 @@ Each top-3 goal from §1 expanded into a full scenario:
 
 ## 11. Risks and technical debt
 
-<!-- 🎯 Навіщо: ⭐ збирає ВСЕ, що може зламатись — і не лише технічне. Без §11 ризики   -->
-<!--           обговорюються на стендапах і губляться; борг лишається у голові того,    -->
-<!--           хто його прийняв.                                                          -->
-<!-- 📋 Що писати: таблиця ризик/борг — серйозність — мітигація — власник. Технічний    -->
-<!--           борг окремою секцією.                                                      -->
-<!-- 📌 Приклад: «EM не пушить — member не оновлює дані | High | …». Перший ризик —      -->
-<!--           часто продуктовий, не технічний. Це нормально.                            -->
+<!-- 🎯 Why: ⭐ collects EVERYTHING that can break — and not only the technical. Without §11 risks -->
+<!--           are discussed at standups and get lost; debt stays in the head of the person -->
+<!--           who took it on.                                                               -->
+<!-- 📋 What to write: a risk/debt — severity — mitigation — owner table. Technical       -->
+<!--           debt as a separate section.                                                   -->
+<!-- 📌 Example: «EM doesn't push — member doesn't update data | High | …». The first risk is -->
+<!--           often a product one, not a technical one. That's normal.                      -->
 
 <!-- Severity column literals: Low / Medium / High for regular risks; "Open question" for rows
      created by Step-7 `Save as Open Question` resolutions (see references/socratic-loop.md). -->
@@ -312,11 +312,11 @@ Each top-3 goal from §1 expanded into a full scenario:
 
 ## 12. Glossary
 
-<!-- 🎯 Навіщо: ⭐ СЛОВНИК ДОМЕНУ, який припиняє суперечки через рік («checkpoint —      -->
-<!--           weekly чи biweekly? Quarter — календарний чи фіскальний?»).                -->
-<!-- 📋 Що писати: таблиця термін / значення. Бізнес-терміни + технічні вперемішку.       -->
-<!--           Один термін може мати дві мови у заголовку: «Goal (Обʼєктив)».              -->
-<!-- 📌 Приклад: «Lesson | урок усередині курсу, що складається з блоків (text, video)». -->
+<!-- 🎯 Why: ⭐ a DOMAIN GLOSSARY that ends arguments a year later («checkpoint —           -->
+<!--           weekly or biweekly? Quarter — calendar or fiscal?»).                          -->
+<!-- 📋 What to write: a term / meaning table. Business and technical terms mixed together. -->
+<!--           A term may carry a second language in its heading: «Goal (<term in the team's language>)». -->
+<!-- 📌 Example: «Lesson | a lesson inside a course, made of blocks (text, video)».           -->
 
 | Term | Meaning |
 |---|---|

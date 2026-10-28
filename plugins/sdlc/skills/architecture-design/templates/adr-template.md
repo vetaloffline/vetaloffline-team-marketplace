@@ -1,22 +1,22 @@
-<!-- Format: MADR (Markdown Any Decision Record — формат запису архітектурних рішень). -->
+<!-- Format: MADR (Markdown Any Decision Record — a format for recording architecture decisions). -->
 
 ---
-status: Accepted                                # Proposed → Accepted → Superseded by NNNN. Цей skill пише Accepted одразу.
-owner: "<decision owner — usually Architect>"   # Хто несе відповідальність за рішення
-reviewers: []                                   # Хто переглянув ADR перед merge (зазвичай Tech Lead + Security якщо стосується)
-updated_at: "<YYYY-MM-DD>"                      # Дата останнього оновлення (для Superseded — дата заміни)
-feature_size: M                                 # XS/S/M/L/XL — успадковується з PRD
-stage: "04-05"                                  # Стадія SDLC, на якій ADR народився
-ticket: "<ticket-id>"                           # Тікет із трекера (Jira/Linear), що тригернув функцію
+status: Accepted                                # Proposed → Accepted → Superseded by NNNN. This skill writes Accepted right away.
+owner: "<decision owner — usually Architect>"   # Who is accountable for the decision
+reviewers: []                                   # Who reviewed the ADR before merge (usually Tech Lead + Security if relevant)
+updated_at: "<YYYY-MM-DD>"                      # Date of the last update (for Superseded — the replacement date)
+feature_size: M                                 # XS/S/M/L/XL — inherited from the PRD
+stage: "04-05"                                  # The SDLC stage where the ADR was born
+ticket: "<ticket-id>"                           # The tracker ticket (Jira/Linear) that triggered the feature
 ---
 
 # NNNN — <title in imperative: e.g. "Use sliding window for rate limiting">
 
 <!-- Spawned by sdlc:architecture-design when a decision crosses the blast-radius threshold. -->
 <!-- See sdlc/plugin/skills/architecture-design/references/blast-radius-heuristic.md -->
-<!-- ВАЖЛИВО: заголовок описує РІШЕННЯ, не проблему. -->
-<!-- ✓ "Зберігати урок як таблицю блоків різних типів"  -->
-<!-- ✗ "Стратегія зберігання уроку"                     -->
+<!-- IMPORTANT: the title describes the DECISION, not the problem. -->
+<!-- ✓ "Store a lesson as a table of blocks of different types"  -->
+<!-- ✗ "Lesson storage strategy"                                  -->
 
 - **Status:** Accepted
 - **Date:** <YYYY-MM-DD>
@@ -26,10 +26,10 @@ ticket: "<ticket-id>"                           # Тікет із трекера
 
 <2-4 sentences: what is happening, why this decision needs to be made now. Pull from sad.md §3 (Context) + the section that triggered this ADR.>
 
-<!-- Приклад (з 0001-content-storage-strategy.md):                                                              -->
-<!-- "PRD §4 говорить: methodist складає урок зі змішаного контенту — текст + відео + картинки.                 -->
-<!--  Питання: у якій формі зберігаємо тіло уроку у БД? Це фундаментальне рішення, від нього залежить API,      -->
-<!--  форма фронт-редактора, можливість перевпорядкування блоків." (3 речення)                                  -->
+<!-- Example (from 0001-content-storage-strategy.md):                                                         -->
+<!-- "PRD §4 says: a methodist builds a lesson from mixed content — text + video + images.                    -->
+<!--  Question: in what form do we store the lesson body in the DB? This is a foundational decision; the API, -->
+<!--  the shape of the frontend editor and the ability to reorder blocks depend on it." (3 sentences)         -->
 
 ## Decision drivers
 
@@ -39,8 +39,8 @@ ticket: "<ticket-id>"                           # Тікет із трекера
 - <e.g. Multi-tenant isolation requirement (PRD §Constraints)>
 - <e.g. Existing Redis cluster — no new infra cost>
 
-<!-- Принцип: кожен буліт — або з PRD §6 NFR, або з §2 SAD Constraints, або з §1 топ-3 якостей. -->
-<!-- НЕ вигадуй драйверів — це фільтр від «pet decisions» (рішень з власних уподобань архітектора). -->
+<!-- Principle: each bullet comes from PRD §6 NFR, or SAD §2 Constraints, or the §1 top-3 qualities. -->
+<!-- Do NOT invent drivers — this filters out «pet decisions» (decisions from the architect's own preferences). -->
 
 ## Considered options
 
@@ -50,8 +50,8 @@ ticket: "<ticket-id>"                           # Тікет із трекера
 2. **<Option B>** — <one sentence>.
 3. **<Option C>** — <one sentence>.
 
-<!-- ВАЖЛИВО: усі опції, які реально розглядалися — включно з тими, що користувач відкинув. -->
-<!-- НЕ додавай страшмена (опцію, яку обмеження стеку вже виключають) — це F6-помилка критика. -->
+<!-- IMPORTANT: every option that was really considered — including the ones the user rejected. -->
+<!-- Do NOT add a straw man (an option the stack constraints already rule out) — that is a critic F6 error. -->
 
 ## Decision outcome
 
@@ -70,14 +70,14 @@ ticket: "<ticket-id>"                           # Тікет із трекера
 **Neutral**
 - <e.g. Migration to fixed window later is possible but requires data backfill>
 
-<!-- Чесний наслідок-лог відрізняється від «забули» тим, що Negative і Neutral заповнені теж, не лише Positive. -->
+<!-- An honest consequences log differs from «forgot» in that Negative and Neutral are filled in too, not only Positive. -->
 
 ## Links
 
-<!-- Без цієї секції ADR — файл-сирота. ADR живе у трьох звʼязках з іншими файлами:               -->
-<!--   1) угору до PRD (який user story тригернув)                                                  -->
-<!--   2) угору до §N SAD (до якої секції прикріплене)                                              -->
-<!--   3) у сторону до сусіднього ADR (якщо разом утворюють один договір)                          -->
+<!-- Without this section the ADR is an orphan file. An ADR lives in three links to other files:            -->
+<!--   1) up to the PRD (which user story triggered it)                                                    -->
+<!--   2) up to SAD §N (which section it is attached to)                                                   -->
+<!--   3) sideways to a neighbouring ADR (if together they form one contract)                              -->
 
 - PRD: [[../PRD.md]]
 - SAD: [[../sad.md]] §<N>

@@ -26,118 +26,118 @@ triggers:
 
 # Skill: scaffold (new project from base-tpl)
 
-Матеріалізує новий проєкт із темплейта **base-tpl** субтрактивно: копіюється повний
-наповнений шлях, невибрані батарейки **фізично видаляються** (теки, сервіси compose,
-CI-джоби, рядки README). «Так на все» = темплейт байт-у-байт. Механіка вирізання живе
-у `scaffold.sh` в корені base-tpl і тестується CI-матрицею base-tpl — цей скіл лише
-збирає відповіді і викликає двигун.
+Materializes a new project from the **base-tpl** template subtractively: the full
+filled path is copied, and the batteries not chosen are **physically removed** (folders, compose services,
+CI jobs, README lines). «Yes to everything» = the template byte for byte. The cutting mechanics live
+in `scaffold.sh` at the root of base-tpl and are tested by the base-tpl CI matrix — this skill only
+collects the answers and calls the engine.
 
-## Джерело темплейта
+## Template source
 
-1. Якщо задано env `SDLC_BASE_TPL` — використовуй цей шлях (локальний клон base-tpl).
-2. Інакше — свіжий shallow-клон публічного репо:
+1. If the env `SDLC_BASE_TPL` is set — use that path (a local clone of base-tpl).
+2. Otherwise — a fresh shallow clone of the public repo:
    ```bash
    git clone --depth 1 https://github.com/genkovich/base-tpl /tmp/base-tpl-$$
    ```
-   Клон разовий, після скафолда його можна видалити.
+   The clone is one-off; it can be deleted after the scaffold.
 
-## Кроки
+## Steps
 
-### 1. Контекст: idea-brief
+### 1. Context: idea-brief
 
-Якщо у поточній теці є `docs/idea-brief.md` (продукт `/sdlc:interview` у greenfield-режимі) —
-прочитай його: назва продукту (kebab-case slug) і суть беруться звідти, назву не питай
-(лише підтверди slug одним рядком у першому питанні кроку 2). Якщо brief-а нема —
-спитай назву проєкту (kebab-case slug) перед техінтерв'ю.
+If the current folder has `docs/idea-brief.md` (the output of `/sdlc:interview` in greenfield mode) —
+read it: the product name (kebab-case slug) and the gist come from there, don't ask for the name
+(only confirm the slug in one line in the first question of step 2). If there is no brief —
+ask for the project name (kebab-case slug) before the tech interview.
 
-Ціль скафолда — **поточна тека**, якщо вона порожня або містить лише `docs/` з brief-ом;
-інакше — нова тека `./<slug>`.
+The scaffold target is **the current folder** if it is empty or contains only `docs/` with the brief;
+otherwise — a new folder `./<slug>`.
 
-### 2. Техінтерв'ю — виклик А (стек)
+### 2. Tech interview — call A (stack)
 
-Один AskUserQuestion із чотирма питаннями; рекомендований варіант першим:
+One AskUserQuestion with four questions; the recommended option first:
 
-1. **Мова бекенда:** Go (Recommended) / PHP / Python / TypeScript
-2. **Архітектура:** Модульний моноліт (Recommended) / Мікросервіси
-3. **Фронтенд:** React + FSD (Recommended) / Без фронта / Flat React
-4. **Auth:** Google OAuth (Recommended) / Без auth / Email + password
+1. **Backend language:** Go (Recommended) / PHP / Python / TypeScript
+2. **Architecture:** Modular monolith (Recommended) / Microservices
+3. **Frontend:** React + FSD (Recommended) / No frontend / Flat React
+4. **Auth:** Google OAuth (Recommended) / No auth / Email + password
 
-**Чесність про наповнення base-tpl.** Наповнені шляхи зараз:
+**Honesty about what base-tpl contains.** The filled paths right now:
 
-| Вибір | Стан |
+| Choice | State |
 |---|---|
-| Go + моноліт | ✅ `templates/go-react` |
-| React + FSD | ✅ (той самий шлях) |
-| **Без фронта** | ✅ реальна субтракція (`--no-web`) |
-| Google OAuth | ✅ вшито в темплейт |
-| PHP / Python / TypeScript | 🔒 ще не наповнено |
-| Мікросервіси | 🔒 ще не наповнено |
-| Flat React | 🔒 ще не наповнено |
-| Без auth / Email + password | 🔒 ще не наповнено (auth вшито в темплейт) |
+| Go + monolith | ✅ `templates/go-react` |
+| React + FSD | ✅ (the same path) |
+| **No frontend** | ✅ real subtraction (`--no-web`) |
+| Google OAuth | ✅ built into the template |
+| PHP / Python / TypeScript | 🔒 not filled yet |
+| Microservices | 🔒 not filled yet |
+| Flat React | 🔒 not filled yet |
+| No auth / Email + password | 🔒 not filled yet (auth is built into the template) |
 
-Вибір 🔒-варіанта → зупинись і скажи прямо: «цей шлях у base-tpl ще не наповнено —
-наповни `templates/<стек>` у base-tpl або обери наповнений варіант». Не генеруй
-заглушок замість темплейта.
+Choosing a 🔒 option → stop and say it plainly: «this path in base-tpl is not filled yet —
+fill `templates/<stack>` in base-tpl or choose a filled option». Don't generate
+stubs in place of the template.
 
-### 3. Техінтерв'ю — виклик Б (батарейки)
+### 3. Tech interview — call B (batteries)
 
-Другий AskUserQuestion: одне multiSelect-питання про батарейки + одне про freshness:
+A second AskUserQuestion: one multiSelect question about batteries + one about freshness:
 
-1. **Батарейки** (multiSelect, всі увімкнені за замовчуванням — Enter лишає все):
-   - **Deploy** — `deploy/` (Caddy авто-TLS, prod-compose) + deploy-workflow (GHCR → VPS → health-гейт)
-   - **CI** — `.github/workflows/ci.yml` (ті самі перевірки, що `make check`)
-   - **Моніторинг** — Prometheus + Grafana локально і в проді (ендпоінт `/metrics` в api лишається завжди)
-2. **Freshness** — оновити піни інфраструктури до свіжих версій? Так (Recommended) / Ні.
+1. **Batteries** (multiSelect, all on by default — Enter keeps everything):
+   - **Deploy** — `deploy/` (Caddy auto-TLS, prod compose) + a deploy workflow (GHCR → VPS → health gate)
+   - **CI** — `.github/workflows/ci.yml` (the same checks as `make check`)
+   - **Monitoring** — Prometheus + Grafana locally and in prod (the `/metrics` endpoint in the api always stays)
+2. **Freshness** — update the infrastructure pins to fresh versions? Yes (Recommended) / No.
 
-Невибрана батарейка фізично зникає: тека, сервіси compose, CI-джоби, рядки README.
+A battery not chosen physically disappears: the folder, compose services, CI jobs, README lines.
 
-### 4. Виклик двигуна
+### 4. Calling the engine
 
 ```bash
-BASE_TPL=${SDLC_BASE_TPL:-/tmp/base-tpl-$$}   # див. «Джерело темплейта»
+BASE_TPL=${SDLC_BASE_TPL:-/tmp/base-tpl-$$}   # see «Template source»
 OWNER=$(gh api user -q .login 2>/dev/null || echo example)
 "$BASE_TPL/scaffold.sh" "$TARGET" "$SLUG" "$OWNER" \
   [--no-web] [--no-deploy] [--no-ci] [--no-observability] \
   [--brief docs/idea-brief.md] \
-  [--no-git]   # лише якщо обрано freshness — git init робиться після бампів
+  [--no-git]   # only if freshness was chosen — git init happens after the bumps
 ```
 
-`scaffold.sh` сам: копіює tracked-файли темплейта, вирізає невибрані батарейки за
-маркерами `battery:<name>`, перейменовує бренд (`myapp` → slug, `MyApp` → Display,
-`example/myapp` → owner/slug), копіює `api/.env.example` → `api/.env`,
-кладе brief у `docs/idea-brief.md` і робить `git init` + t0-коміт.
+`scaffold.sh` itself: copies the template's tracked files, cuts the batteries not chosen by
+the `battery:<name>` markers, renames the brand (`myapp` → slug, `MyApp` → Display,
+`example/myapp` → owner/slug), copies `api/.env.example` → `api/.env`,
+puts the brief into `docs/idea-brief.md` and does `git init` + the t0 commit.
 
-### 5. Freshness (якщо обрано)
+### 5. Freshness (if chosen)
 
-Після субтракції, до git init (тому `--no-git` у кроці 4):
+After the subtraction, before git init (hence `--no-git` in step 4):
 
-1. Зістав піни поверхні стека: Go toolchain і base-образи в `api/Dockerfile`,
-   `GO_VERSION`/`NODE_VERSION` у workflows, docker-теги (`postgres`, `prom/prometheus`,
-   `grafana/grafana`, `caddy`, `nginx`), версії GitHub Actions.
-2. Свіжі версії бери через **context7** (`resolve-library-id` → `query-docs`);
-   для docker-тегів і Actions, яких context7 не знає — WebSearch або registry
-   (hub.docker.com, github releases). Якщо жоден інструмент недоступний —
-   чесно скіпни freshness зі звітом, скафолд не блокуй.
-3. Застосуй бампи → гейт: `make check` (при `--no-web` — `make api-check`).
-   Червоно → відкат бампів (скафолд віддається зеленим, зі звітом що і чому відкачено).
-4. Заверши: `git init -b main && git add -A && git commit -m "t0: scaffold <slug> from base-tpl (go-react)"`.
+1. Collect the stack surface pins: the Go toolchain and base images in `api/Dockerfile`,
+   `GO_VERSION`/`NODE_VERSION` in the workflows, docker tags (`postgres`, `prom/prometheus`,
+   `grafana/grafana`, `caddy`, `nginx`), GitHub Actions versions.
+2. Get fresh versions via **context7** (`resolve-library-id` → `query-docs`);
+   for docker tags and Actions that context7 doesn't know — WebSearch or the registry
+   (hub.docker.com, github releases). If no tool is available —
+   honestly skip freshness with a report; don't block the scaffold.
+3. Apply the bumps → gate: `make check` (with `--no-web` — `make api-check`).
+   Red → roll back the bumps (the scaffold is handed over green, with a report of what was rolled back and why).
+4. Finish: `git init -b main && git add -A && git commit -m "t0: scaffold <slug> from base-tpl (go-react)"`.
 
-Бампаються **піни інфраструктури**, не `go.mod`/`package-lock.json` (залежності коду
-оновлюються своїм циклом у проєкті).
+What gets bumped is the **infrastructure pins**, not `go.mod`/`package-lock.json` (code dependencies
+are updated in their own cycle inside the project).
 
-### 6. Фінальне повідомлення
+### 6. Final message
 
-- **`/init`** — кореневого CLAUDE.md у темплейті навмисно немає; згенеруй його вже
-  з контекстом проєкту (`api/CLAUDE.md`, `web/CLAUDE.md` і path-rules приїхали з темплейтом).
-- `make check` — наскрізна перевірка.
-- `make up` → повний локальний стек (порти — у README проєкту).
-- Google-логін потребує реальних `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` в `api/.env` (одна env-пара: закомічений `api/.env.example` → gitignored `api/.env`, його читає і локальний дев-цикл, і compose).
-- Далі по SDLC: фічі через `/sdlc:interview <slug>` (feature mode) у новому репо.
+- **`/init`** — the template deliberately has no root CLAUDE.md; generate it now
+  with the project's context (`api/CLAUDE.md`, `web/CLAUDE.md` and the path rules came with the template).
+- `make check` — the end-to-end check.
+- `make up` → the full local stack (ports — in the project README).
+- Google login needs real `GOOGLE_CLIENT_ID`/`GOOGLE_CLIENT_SECRET` in `api/.env` (one env pair: the committed `api/.env.example` → the gitignored `api/.env`; both the local dev loop and compose read it).
+- Next in the SDLC: features via `/sdlc:interview <slug>` (feature mode) in the new repo.
 
-## Поширені помилки
+## Common mistakes
 
-- Скіл починає «допомагати» руками після scaffold.sh (правити файли, докручувати) —
-  ні: скафолд закінчується t0-комітом, все інше — окремі кроки у проєкті.
-- Вибрано 🔒-варіант, а скіл згенерував заглушку сам — заборонено, чесна відмова.
-- Freshness бампнув go.mod/package-lock — відкат: це піни коду, не інфри.
-- Забутий `--no-git` при freshness → бампи розмазуються по історії після t0.
+- The skill starts «helping» by hand after scaffold.sh (editing files, tweaking) —
+  no: the scaffold ends with the t0 commit; everything else is separate steps inside the project.
+- A 🔒 option was chosen and the skill generated a stub itself — forbidden; refuse honestly.
+- Freshness bumped go.mod/package-lock — roll back: those are code pins, not infra.
+- Forgot `--no-git` with freshness → the bumps get smeared across the history after t0.

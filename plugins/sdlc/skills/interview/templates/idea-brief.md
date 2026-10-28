@@ -17,10 +17,10 @@ feasibility_state: proposed | confirmed
 <!-- Stage 01 → see SDLC/plugin/skills/interview/SKILL.md -->
 <!-- Why: capture the idea before it's forgotten or retold incorrectly -->
 
-<!-- Anti-pattern enforcement (Claude self-check, не user-visible):
-     Заборонені терміни у тілі: Postgres, Redis, Kafka, конкретні library names,
-     SM-2/FSRS/Leitner, схеми таблиць, API endpoints, latency targets, SLOs.
-     Це PRODUCT brief. Tech живе у SPEC §6 + architecture-brief + ADR (gate 3+). -->
+<!-- Anti-pattern enforcement (Claude self-check, not user-visible):
+     Forbidden terms in the body: Postgres, Redis, Kafka, concrete library names,
+     SM-2/FSRS/Leitner, table schemas, API endpoints, latency targets, SLOs.
+     This is a PRODUCT brief. Tech lives in SPEC §6 + architecture-brief + ADR (gate 3+). -->
 
 # Idea Brief — <feature name>
 

@@ -22,27 +22,27 @@ triggers:
 stage: "util"
 ---
 
-# Skill: user-documentation (cross-cutting — живий застосунок → користувацька документація)
+# Skill: user-documentation (cross-cutting — live application → user documentation)
 
-Генерує **користувацьку** (не dev) документацію з живого веб-застосунку: інвентаризація флоу →
-детермінований прогін кожного флоу в браузері з журналом дій і скріншотами станів → окремий
-clean-context агент пише один flow-документ строго з журналу → тонкий User Guide індекс з лінками
-на всі флоу. Опційно — скринкасти через реплей журналу. Джерело правди для стилю —
-[`./references/style-guide.md`](./references/style-guide.md); для відтворюваності —
+Generates **user** (not dev) documentation from a live web application: a flow inventory →
+a deterministic run of each flow in the browser with an action journal and state screenshots → a separate
+clean-context agent writes one flow document strictly from the journal → a thin User Guide index with links
+to all flows. Optionally — screencasts by replaying the journal. The source of truth for style is
+[`./references/style-guide.md`](./references/style-guide.md); for reproducibility —
 [`./references/determinism.md`](./references/determinism.md).
 
-Браузерний канал — **`playwright-cli`** (канон плагіна, див. `verify-ui`): токен-ефективний CLI
-для циклів. Playwright MCP у пайплайні — задокументований anti-pattern.
+The browser channel is **`playwright-cli`** (the plugin's canon, see `verify-ui`): a token-efficient CLI
+for loops. Playwright MCP in the pipeline is a documented anti-pattern.
 
-**Owner:** батько-оркестратор (цей skill) володіє манифестом, гейтом, індексом і когерентністю;
-кожен флоу цілком (браузер + текст) належить одному агенту `sdlc:doc-flow`.
+**Owner:** the parent orchestrator (this skill) owns the manifest, the gate, the index and coherence;
+each flow as a whole (browser + text) belongs to one `sdlc:doc-flow` agent.
 
 ## When to use
 
-- Продукт має UI, який уже працює на dev/staging, і потрібен user guide «як користуватись» —
-  з реальними скріншотами, а не з уяви.
-- Оновлення документації після відчутних UI-змін (перегенерація — той самий протокол).
-- НЕ для dev-доки (architecture/API — це backbone-стадії), НЕ для статичних сайтів без флоу.
+- The product has a UI that already runs on dev/staging, and a «how to use it» user guide is needed —
+  with real screenshots, not imagined ones.
+- Updating the documentation after noticeable UI changes (regeneration — the same protocol).
+- NOT for dev docs (architecture/API — those are backbone stages), NOT for static sites without flows.
 
 ## Inputs
 
@@ -50,36 +50,36 @@ clean-context агент пише один flow-документ строго з
 /sdlc:user-documentation <target-dir> [--flows a,b,c] [--video] [--base-url URL] [--embed wikilink|markdown]
 ```
 
-- `<target-dir>` — тека, куди лягають документи (vault-тека або `docs/user-guide/` репо).
-- `--flows` — явний список слагів; без нього список будується інвентаризацією (крок 4).
-- `--video` — після доків згенерувати скринкасти реплеєм журналів.
-- `--base-url` — адреса застосунку; без неї питаємо користувача на кроці 2.
-- `--embed` — примусовий синтаксис вставок; без нього — автодетект (крок 1).
+- `<target-dir>` — the folder the documents go into (a vault folder or the repo's `docs/user-guide/`).
+- `--flows` — an explicit list of slugs; without it the list is built by the inventory (step 4).
+- `--video` — after the docs, generate screencasts by replaying the journals.
+- `--base-url` — the application's address; without it we ask the user at step 2.
+- `--embed` — force the embed syntax; without it — auto-detect (step 1).
 
 **Gate (hard refuse):**
 
-1. `playwright-cli --version` падає → відмова з інструкцією:
+1. `playwright-cli --version` fails → refuse with instructions:
    `npm install -g @playwright/cli@latest && npx playwright install chromium`.
-2. Dev server не відповідає на `<base-url>` → відмова: «підніми застосунок і повтори» (не
-   вигадуємо стан — прецедент `verify-ui`).
-3. Auth-стратегія невідома → AskUserQuestion (варіанти: без авторизації / кроки логіна /
-   готовий state-файл / службовий токен). Без відповіді — відмова.
+2. The dev server doesn't respond at `<base-url>` → refuse: «start the application and retry» (we
+   don't invent state — the `verify-ui` precedent).
+3. The auth strategy is unknown → AskUserQuestion (options: no auth / login steps /
+   a ready state file / a service token). No answer → refuse.
 
 ## Protocol
 
-1. **Детект цілі й синтаксису.** Walk-up від `<target-dir>` до кореня: знайшов `.obsidian/` →
-   vault → `embed_syntax: wikilink`; інакше → `markdown`. `--embed` — override. Шляхи з
-   пробілами (iCloud vault) — завжди в лапках.
-2. **Gate** (див. вище) + зафіксувати `base_url` і назву продукту.
-3. **Auth bootstrap** (раз per роль, робить БАТЬКО): пройти логін за обраною стратегією →
-   `playwright-cli -s=docgen-auth state-save` → `<target>/.docgen/auth-<role>.json` → закрити
-   сесію. Субагенти тільки `state-load` — жоден агент не логіниться сам.
-4. **Інвентаризація флоу** → протокол у [`./references/flow-inventory.md`](./references/flow-inventory.md):
-   merge трьох джерел (`--flows` / скан репо через `sdlc:explorer`, fallback `Explore` / живий
-   `snapshot` навігації); класифікація кожного флоу `doc_type` (task-flow / state-reference /
-   auth) і `mutates` (чи змінює дані). AskUserQuestion: підтвердити список + типи + scope.
-   **Після підтвердження список заморожений.**
-5. **Манифест** `<target>/.docgen/flows-manifest.json` + створити теки `screenshots/<slug>/`:
+1. **Detect the target and the syntax.** Walk up from `<target-dir>` to the root: found `.obsidian/` →
+   vault → `embed_syntax: wikilink`; otherwise → `markdown`. `--embed` overrides. Paths with
+   spaces (an iCloud vault) — always quoted.
+2. **Gate** (see above) + record the `base_url` and the product name.
+3. **Auth bootstrap** (once per role, done by the PARENT): go through the login with the chosen strategy →
+   `playwright-cli -s=docgen-auth state-save` → `<target>/.docgen/auth-<role>.json` → close
+   the session. Subagents only `state-load` — no agent logs in by itself.
+4. **Flow inventory** → the protocol in [`./references/flow-inventory.md`](./references/flow-inventory.md):
+   merge three sources (`--flows` / a repo scan via `sdlc:explorer`, fallback `Explore` / a live
+   navigation `snapshot`); classify each flow by `doc_type` (task-flow / state-reference /
+   auth) and `mutates` (whether it changes data). AskUserQuestion: confirm the list + types + scope.
+   **After confirmation the list is frozen.**
+5. **Manifest** `<target>/.docgen/flows-manifest.json` + create the folders `screenshots/<slug>/`:
 
    ```json
    {
@@ -98,7 +98,7 @@ clean-context агент пише один flow-документ строго з
          "mutates": true,
          "start_url": "/mentorship",
          "auth_state": ".docgen/auth-mentor.json",
-         "scope": "list → create dialog → toast; без edit/delete",
+         "scope": "list → create dialog → toast; no edit/delete",
          "out_file": "Flow - Create Mentorship Session.md",
          "screenshots_dir": "screenshots/create-session",
          "journal": ".docgen/journals/create-session.jsonl",
@@ -109,98 +109,98 @@ clean-context агент пише один flow-документ строго з
    }
    ```
 
-6. **Фан-аут `sdlc:doc-flow`** (fallback: general-purpose з тим самим промптом). **Батчування
-   за `mutates`, не за кількістю**: read-only флоу паралельно батчами ≤3; мутуючі — СТРОГО
-   ПОСЛІДОВНО після read-only (конкурентні мутації спільної БД псують скріни сусідів: агент A
-   створює запис посеред прогону B — і список у B різний між його власними кроками). Промпт
-   кожному агенту інлайнить (clean context — агент не бачить цієї розмови):
+6. **Fan out `sdlc:doc-flow`** (fallback: general-purpose with the same prompt). **Batch
+   by `mutates`, not by count**: read-only flows in parallel in batches of ≤3; mutating ones STRICTLY
+   SEQUENTIALLY after the read-only ones (concurrent mutations of a shared DB spoil the neighbours' screenshots: agent A
+   creates a record in the middle of B's run — and B's list differs between its own steps). The prompt
+   to each agent inlines (clean context — the agent doesn't see this conversation):
    - worker preamble: «execute directly, do not spawn sub-agents, use tools directly, report
      results with absolute file paths»;
-   - його JSON-entry з манифеста (з абсолютизованими шляхами) + global-поля (`base_url`,
+   - its JSON entry from the manifest (with absolutized paths) + the global fields (`base_url`,
      `embed_syntax`, `data_prefix`, `product_name`);
-   - абсолютні шляхи: style-guide, determinism, шаблон
+   - absolute paths: style-guide, determinism, template
      `${CLAUDE_PLUGIN_ROOT}/skills/user-documentation/templates/flow-doc.md`, auth-state;
-   - **назви всіх флоу цього прогону** — Related Flows лінкує тільки заплановані доки, не
-     вигадані;
-   - cwd-гігієна: всі playwright-cli команди запускати з власної тимчасової теки (артефакти
-     `.playwright-cli/` падають у cwd і не мають засмічувати ціль/vault);
-   - імена сесій короткі (`df-<n>` за індексом флоу) — довші впираються в ліміт unix-socket
-     шляху (determinism.md §5).
+   - **the names of all flows in this run** — Related Flows links only to planned docs, not
+     invented ones;
+   - cwd hygiene: run every playwright-cli command from its own temporary folder (the
+     `.playwright-cli/` artifacts land in the cwd and must not litter the target/vault);
+   - short session names (`df-<n>` by flow index) — longer ones hit the unix-socket
+     path limit (determinism.md §5).
 
-   Очікуваний фінальний рядок — sentinel `DOCFLOW_OK ...` / `DOCFLOW_FAIL ...`. На FAIL —
-   **1 retry**; знову FAIL → `status: failed` у манифесті, пайплайн продовжується.
-7. **User Guide індекс** (батько): з H1 + лід-абзаца кожного готового дока + манифеста зібрати
-   тонкий `<Product> - User Guide.md` за
-   [`./templates/user-guide-index.md`](./templates/user-guide-index.md). Кожен флоу злінкований
-   (vault: `[[Flow - X]]`; repo: `[Flow - X](<Flow - X.md>)`). Індекс v1 без власних скрінів.
-8. **Опційний скринкаст** (`--video`): для обраних флоу
+   The expected final line is the sentinel `DOCFLOW_OK ...` / `DOCFLOW_FAIL ...`. On FAIL —
+   **1 retry**; FAIL again → `status: failed` in the manifest, the pipeline continues.
+7. **User Guide index** (parent): from the H1 + lead paragraph of each finished doc + the manifest, build
+   a thin `<Product> - User Guide.md` per
+   [`./templates/user-guide-index.md`](./templates/user-guide-index.md). Every flow is linked
+   (vault: `[[Flow - X]]`; repo: `[Flow - X](<Flow - X.md>)`). Index v1 has no screenshots of its own.
+8. **Optional screencast** (`--video`): for the chosen flows
    ```bash
    "${CLAUDE_PLUGIN_ROOT}/skills/user-documentation/scripts/replay-screencast.sh" \
      "<target>/.docgen/journals/<slug>.jsonl" "<target>/screencasts/<slug>.webm" \
      "<target>/.docgen/auth-<role>.json" "<base-url>" "<start-url>"
    ```
-   → секція `## Screencast` з embed-ом одразу після ліда. Для мутуючих флоу попередити
-   користувача: реплей створить ще один `Docgen:`-запис.
-9. **Механічний гейт**:
+   → a `## Screencast` section with the embed right after the lead. For mutating flows warn
+   the user: the replay will create one more `Docgen:` record.
+9. **Mechanical gate**:
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/skills/user-documentation/scripts/validate-docs.py" \
      "<target-dir>" --embed <mode> [--video]
    ```
-   Червоне → точкові фікси (батько сам, без агентів) → re-run до зеленого.
-10. **Когерентність** (батько; БЕЗ `sdlc:critic` — його проби зашиті під PRD/SAD, а батько тут
-    clean-context by construction): grep-звірка між доками — назва продукту однакова, ролі та
-    статуси називаються консистентно, терміни збігаються з UI.
-11. **Handoff.** Git-репо → запропонувати commit `docs: user documentation for <product>`
-    (ТІЛЬКИ шляхи цілі); vault → без коміту (obsidian-git сам). Закрити СВОЇ сесії
-    (`-s=<name> close`, ніколи `close-all`). `.docgen/` лишається — журнали = сировина для
-    майбутніх `--video`. Завершити **stage-handoff блоком** за
-    [`../_shared/handoff.md`](../_shared/handoff.md), utility-варіант: *Run next* = «resume
-    your backbone stage» або повторний виклик з `--video`.
+   Red → targeted fixes (the parent itself, no agents) → re-run until green.
+10. **Coherence** (the parent; WITHOUT `sdlc:critic` — its probes are wired for PRD/SAD, and the parent here
+    is clean-context by construction): a grep cross-check between the docs — the product name is the same, roles and
+    statuses are named consistently, terms match the UI.
+11. **Handoff.** A git repo → propose the commit `docs: user documentation for <product>`
+    (ONLY the target paths); a vault → no commit (obsidian-git handles it). Close ITS OWN sessions
+    (`-s=<name> close`, never `close-all`). `.docgen/` stays — the journals are raw material for
+    future `--video` runs. Finish with a **stage-handoff block** per
+    [`../_shared/handoff.md`](../_shared/handoff.md), the utility variant: *Run next* = «resume
+    your backbone stage» or a repeat call with `--video`.
 
-## Questions for discussion (відкрите, перевіряється живим прогоном)
+## Questions for discussion (open, to be checked by a live run)
 
-- Чи існує `video-start --size` у playwright-cli 0.1.13 (у help не підтверджено). Якщо ні —
-  розмір відео = розмір в'юпорта (1280×800), що нас і так влаштовує.
-- Чи приймає `run-code` контекст іменованої сесії так, як очікуємо, — перший живий реплей
-  скринкаста це підтвердить/спростує.
-- Pacing-пауза реплею 0.5–1.0s (`PACE` env у replay-screencast.sh) — підібрати на око.
+- Does `video-start --size` exist in playwright-cli 0.1.13 (not confirmed in the help). If not —
+  the video size = the viewport size (1280×800), which suits us anyway.
+- Does `run-code` accept a named session's context the way we expect — the first live screencast
+  replay will confirm or refute it.
+- The replay pacing pause of 0.5–1.0s (`PACE` env in replay-screencast.sh) — tune it by eye.
 
 ## Definition of Done
 
-- Кожен підтверджений флоу має `DOCFLOW_OK` (≤1 retry) або чесний `failed` у манифесті й у
-  фінальному звіті — без тихих пропусків.
-- `validate-docs.py` зелений (exit 0) на `<target-dir>`.
-- Індекс існує і лінкує всі згенеровані флоу; embed-синтаксис відповідає режиму цілі.
-- `.docgen/` містить манифест + журнали всіх пройдених флоу.
-- Всі `docflow-*`/`replay-*`/`docgen-auth` сесії закриті.
-- При `--video` — .webm існує і вбудований у відповідний док.
+- Every confirmed flow has `DOCFLOW_OK` (≤1 retry) or an honest `failed` in the manifest and in the
+  final report — no silent skips.
+- `validate-docs.py` is green (exit 0) on `<target-dir>`.
+- The index exists and links every generated flow; the embed syntax matches the target mode.
+- `.docgen/` contains the manifest + the journals of every flow run.
+- All `docflow-*`/`replay-*`/`docgen-auth` sessions are closed.
+- With `--video` — the .webm exists and is embedded in the corresponding doc.
 
 ## Anti-patterns
 
-- **Не вигадуй UI.** Жодного факту поза журналом/snapshot (єдиний виняток — `doc_type: auth`,
-  явно позначений у [`../../agents/doc-flow.md`](../../agents/doc-flow.md)).
-- **Не жени мутуючі флоу паралельно** — це головне джерело недетермінованих скрінів.
-- **Не тримай Playwright MCP у циклі** — канон CLI (прецедент `verify-ui`); MCP лише для
-  живого дебагу поза пайплайном.
-- **Не публікуй скрін ширший за 780px** — це нересайзнутий кадр, який втік з пайплайна.
-- **Не використовуй `> [!note]`** — доки мають рендеритись на GitHub, лише `> **Note:**`.
-- **Не змішуй embed-синтаксиси** — режим один на весь target, з манифеста.
-- **Не роби `close-all`/kill-all** — паралельні агенти діляться машиною.
-- **Не «лагодь» застосунок** — знайдений баг іде у звіт/Troubleshooting, не у код.
-- **Не дублюй шпаргалку CLI** — `playwright-cli install --skills` ставить власний SKILL.md;
-  тут лише скіло-специфічні гочі (determinism.md §5).
+- **Don't invent UI.** No fact outside the journal/snapshot (the only exception is `doc_type: auth`,
+  explicitly marked in [`../../agents/doc-flow.md`](../../agents/doc-flow.md)).
+- **Don't run mutating flows in parallel** — it's the main source of non-deterministic screenshots.
+- **Don't keep Playwright MCP in the loop** — the canon is the CLI (the `verify-ui` precedent); MCP only for
+  live debugging outside the pipeline.
+- **Don't publish a screenshot wider than 780px** — it's an un-resized frame that escaped the pipeline.
+- **Don't use `> [!note]`** — the docs must render on GitHub; only `> **Note:**`.
+- **Don't mix embed syntaxes** — one mode for the whole target, from the manifest.
+- **Don't `close-all`/kill-all** — parallel agents share the machine.
+- **Don't «fix» the application** — a found bug goes into the report/Troubleshooting, not into the code.
+- **Don't duplicate the CLI cheat sheet** — `playwright-cli install --skills` installs its own SKILL.md;
+  here only the skill-specific gotchas (determinism.md §5).
 
 ## Templates / References
 
-- [`./templates/flow-doc.md`](./templates/flow-doc.md) — шаблон flow-документа (тип А + вставний
-  блок типу Б + хвостові таблиці).
-- [`./templates/user-guide-index.md`](./templates/user-guide-index.md) — тонкий індекс v1.
-- [`./references/style-guide.md`](./references/style-guide.md) — кодифікація еталонного стилю.
-- [`./references/determinism.md`](./references/determinism.md) — data state, 780px, журнал,
-  інваріанти валідатора, CLI-гочі.
-- [`./references/flow-inventory.md`](./references/flow-inventory.md) — протокол інвентаризації.
-- [`../verify-ui/SKILL.md`](../verify-ui/SKILL.md) — браузерний канал верифікації AC; той самий
-  CLI-канон, інша мета (вердикт, не документація).
+- [`./templates/flow-doc.md`](./templates/flow-doc.md) — the flow-document template (type A + the insertable
+  type B block + tail tables).
+- [`./templates/user-guide-index.md`](./templates/user-guide-index.md) — the thin index v1.
+- [`./references/style-guide.md`](./references/style-guide.md) — the codified reference style.
+- [`./references/determinism.md`](./references/determinism.md) — data state, 780px, journal,
+  validator invariants, CLI gotchas.
+- [`./references/flow-inventory.md`](./references/flow-inventory.md) — the inventory protocol.
+- [`../verify-ui/SKILL.md`](../verify-ui/SKILL.md) — the browser channel for verifying ACs; the same
+  CLI canon, a different goal (a verdict, not documentation).
 
 ## Example invocation
 
@@ -208,7 +208,7 @@ clean-context агент пише один flow-документ строго з
 /sdlc:user-documentation "~/vault/Beer-LMS-docs" --flows create-session,authentication --video
 ```
 
-Приклад диспатчу одного флоу (крок 6):
+Example of dispatching one flow (step 6):
 
 ```
 Task(subagent_type="sdlc:doc-flow", prompt="
@@ -216,7 +216,7 @@ Task(subagent_type="sdlc:doc-flow", prompt="
   file paths.
   Document ONE flow of 'Beer LMS' (base_url http://localhost:5173, embed_syntax wikilink,
   data_prefix 'Docgen:').
-  Flow entry: {"slug":"create-session", ... (повний JSON-entry, шляхи абсолютні)}.
+  Flow entry: {"slug":"create-session", ... (the full JSON entry, absolute paths)}.
   Read first: <abs>/references/style-guide.md, <abs>/references/determinism.md,
   template <abs>/templates/flow-doc.md. Auth: state-load <abs>/.docgen/auth-mentor.json.
   Session: df-1. Sibling flows this run: Authentication, Session Lifecycle.
@@ -225,8 +225,8 @@ Task(subagent_type="sdlc:doc-flow", prompt="
 
 ## Stage handoff
 
-> **user-documentation → (utility, ad-hoc).** Наприкінці друкується stage-handoff блок за
-> [`../_shared/handoff.md`](../_shared/handoff.md): *What I did* — скільки флоу OK/failed, шлях
-> до індексу й доків, запропонований коміт (для git-цілі); *Review* — індекс + кожен flow-док +
-> звіт валідатора; *Run next* — resume your backbone stage (напр. `/sdlc:ship-feature <slug>`)
-> або повторний виклик із `--video` / рештою флоу. `/clear` опційний (utility-варіант).
+> **user-documentation → (utility, ad-hoc).** At the end a stage-handoff block is printed per
+> [`../_shared/handoff.md`](../_shared/handoff.md): *What I did* — how many flows OK/failed, the path
+> to the index and docs, the proposed commit (for a git target); *Review* — the index + each flow doc +
+> the validator report; *Run next* — resume your backbone stage (e.g. `/sdlc:ship-feature <slug>`)
+> or a repeat call with `--video` / the remaining flows. `/clear` is optional (the utility variant).

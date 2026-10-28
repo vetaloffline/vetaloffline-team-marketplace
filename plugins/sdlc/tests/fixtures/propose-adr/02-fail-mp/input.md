@@ -2,7 +2,7 @@
 
 ## Scenario
 
-Recommendation що **fail** MP-check (легко-reversible вибір між двома HTTP-клієнтами з ідентичним API). Очікується REFUSAL з прозорою причиною, без створення ADR.
+A recommendation that **fails** the MP-check (an easily reversible choice between two HTTP clients with an identical API). Expected: a REFUSAL with a transparent reason, no ADR created.
 
 ## Pre-existing
 
@@ -10,7 +10,7 @@ Recommendation що **fail** MP-check (легко-reversible вибір між �
 delivery/http-client-pick/brainstorm.md
 ```
 
-Зміст (фрагмент):
+Contents (fragment):
 
 ```markdown
 # Brainstorm — http-client-pick
@@ -18,15 +18,15 @@ delivery/http-client-pick/brainstorm.md
 ## Options
 
 ### `requests` Python library
-Pros: industry standard, добре документований.
+Pros: industry standard, well documented.
 Cons: blocking.
 
 ### `httpx` Python library
 Pros: async + sync API, modern.
-Cons: трохи новіший.
+Cons: a bit newer.
 
 ## Recommendation
-`httpx` — async-ready на майбутнє.
+`httpx` — async-ready for the future.
 ```
 
 ## User input
@@ -34,16 +34,16 @@ Cons: трохи новіший.
 ```
 /sdlc-propose-adr http-client-pick
 
-Recommendation — httpx. Чи варто ADR?
+Recommendation — httpx. Is an ADR worth it?
 ```
 
 ## Expected behavior
 
 1. Skill reads brainstorm.md.
-2. Q1 hard-to-reverse: `< 1 day` (бібліотека swap з ідентичним API). FAIL.
+2. Q1 hard-to-reverse: `< 1 day` (a library swap with an identical API). FAIL.
 3. Threshold gate: ≥1 FAIL → STOP.
-4. Skill explanation: «Recommendation `httpx` зафіксований у brainstorm.md. ADR не потрібен — легко переграти (бібліотека з ідентичним API, < 1 day rework).»
-5. NO ADR створено. NO backlink у brainstorm.
+4. Skill explanation: «The recommendation `httpx` is recorded in brainstorm.md. No ADR needed — easy to redo (a library with an identical API, < 1 day rework).»
+5. NO ADR created. NO backlink in brainstorm.
 
 ## Expected files
 
@@ -56,11 +56,11 @@ NO `adr/` directory created.
 
 ## Score against rubric.md
 
-D1: жодних нових файлів. brainstorm unchanged.
-D2: skill correctly identified FAIL і REFUSED з причиною (which criterion).
-D3: skill did NOT create ADR на reversible вибір. MP-threshold protection working.
-D4: NO commit пропозиція (нічого не змінено).
+D1: no new files. brainstorm unchanged.
+D2: skill correctly identified FAIL and REFUSED with a reason (which criterion).
+D3: skill did NOT create an ADR for a reversible choice. MP-threshold protection working.
+D4: NO commit proposal (nothing changed).
 
 ## Why this catches a regression
 
-Якщо skill створив ADR — MP-threshold deflated, ADR стає шумом. Catch на ранній стадії.
+If the skill created an ADR — the MP threshold is deflated, ADRs become noise. Catch it early.

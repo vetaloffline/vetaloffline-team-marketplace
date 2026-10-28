@@ -2,14 +2,14 @@
 
 ## Scenario
 
-Multi-context repo з `CONTEXT-MAP.md`. Очікується що `fix-term` спитає в якому context фіксувати, і пише у відповідний `<ctx>/CONTEXT.md`, не корінь.
+A multi-context repo with `CONTEXT-MAP.md`. `fix-term` is expected to ask which context to record the term in, and to write to the matching `<ctx>/CONTEXT.md`, not the root.
 
 ## Pre-existing
 
-Place перед запуском:
+Place before running:
 ```
 ./CONTEXT-MAP.md            (with list of contexts: billing, runtime, admin)
-billing/CONTEXT.md          (existing з тлумаченням `tenant — billable org`)
+billing/CONTEXT.md          (existing, with the definition `tenant — billable org`)
 ```
 
 ## User input
@@ -17,21 +17,21 @@ billing/CONTEXT.md          (existing з тлумаченням `tenant — bill
 ```
 /sdlc-intake usage-metrics-export
 
-Feature для export usage metrics — runtime context. Tenant runtime view
-(окремо від billing tenant view).
+A feature to export usage metrics — runtime context. The tenant runtime view
+(separate from the billing tenant view).
 
-Domain terms у grade: «usage», «tenant» (runtime — це інший view ніж billing
-tenant!), «export window». Потрібен brainstorm: pull-based (cron) vs
+Domain terms in play: «usage», «tenant» (runtime — this is a different view than the billing
+tenant!), «export window». A brainstorm is needed: pull-based (cron) vs
 push-based (event-driven).
 ```
 
 ## Expected behavior
 
-- §A: створює `delivery/usage-metrics-export/idea-brief.md`. Detect multi-context при першому згадуванні «tenant» — спитує: «який context?» options: billing / runtime / admin. User обирає `runtime`.
-- §B: викликає `sdlc:fix-term tenant --context runtime`. Skill створює `runtime/CONTEXT.md` (нове) з `tenant — runtime view of billable org (compute/quota state). NOT billing tenant (billing CONTEXT.md), NOT user.` Detects conflict з `billing/CONTEXT.md` і fixes via disambiguation.
+- §A: creates `delivery/usage-metrics-export/idea-brief.md`. Detects multi-context at the first mention of «tenant» — asks: «which context?» options: billing / runtime / admin. The user picks `runtime`.
+- §B: calls `sdlc:fix-term tenant --context runtime`. The skill creates `runtime/CONTEXT.md` (new) with `tenant — runtime view of billable org (compute/quota state). NOT billing tenant (billing CONTEXT.md), NOT user.` Detects the conflict with `billing/CONTEXT.md` and fixes it via disambiguation.
 - §C: brainstorm — pull vs push vs hybrid (3 finalists).
 - §D: MP-check — recommendation «event-driven push», hard-to-reverse=PASS, surprising=PASS, finalists=PASS. ADR pass.
-- §E: створює `delivery/usage-metrics-export/adr/0001-event-driven-usage-export.md`.
+- §E: creates `delivery/usage-metrics-export/adr/0001-event-driven-usage-export.md`.
 - §F: commit.
 
 ## Expected files
@@ -42,17 +42,17 @@ delivery/usage-metrics-export/
 ├── brainstorm.md
 └── adr/
     └── 0001-event-driven-usage-export.md
-runtime/CONTEXT.md           # NEW — runtime context, з tenant disambiguation
+runtime/CONTEXT.md           # NEW — runtime context, with tenant disambiguation
 billing/CONTEXT.md           # UNCHANGED — already existed
 ```
 
 ## Score against rubric.md
 
-D1: critical — `runtime/CONTEXT.md` створено, не корінь `CONTEXT.md`. `billing/CONTEXT.md` unchanged.
+D1: critical — `runtime/CONTEXT.md` is created, not the root `CONTEXT.md`. `billing/CONTEXT.md` unchanged.
 D2: fix-term DoD met (multi-context resolve + conflict-with-billing notation).
-D3: no overwrite of existing `billing/CONTEXT.md`.
-D4: commit має посилання на `runtime/CONTEXT.md`, не root.
+D3: no overwrite of the existing `billing/CONTEXT.md`.
+D4: the commit refers to `runtime/CONTEXT.md`, not the root.
 
 ## Why this catches a regression
 
-Якщо skill пише у root `CONTEXT.md` → multi-context detection broken; reader через 6 міс плутає billing-tenant з runtime-tenant.
+If the skill writes to the root `CONTEXT.md` → multi-context detection is broken; a reader 6 months later confuses the billing tenant with the runtime tenant.

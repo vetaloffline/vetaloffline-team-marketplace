@@ -64,4 +64,4 @@ Step 7 completes when:
 
 Then proceed to step 8 (see [`critic.md`](./critic.md)).
 
-For concrete question wording and option descriptions, see [`ask-examples.md`](./ask-examples.md) (junior-friendly Ukrainian shape).
+For concrete question wording and option descriptions, see [`ask-examples.md`](./ask-examples.md) (junior-friendly shape, asked in the user's language).

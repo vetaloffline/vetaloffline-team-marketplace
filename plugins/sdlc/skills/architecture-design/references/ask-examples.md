@@ -1,14 +1,14 @@
 # `AskUserQuestion` examples — explanatory pattern for architecture-design
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Цей файл показує, **як саме формулювати питання користувачу** на кроках 7 (Socratic loop) і 8 (вирішення зауважень критика).
+This file shows **exactly how to word the questions to the user** at steps 7 (Socratic loop) and 8 (resolving the critic's findings).
 
-Принцип: option label — це **наступна дія skill-у** («Прийняти», «Перенести у §11 OQ»), а option description — це **3-5 речень, що технічно станеться** + **trade-off простими словами без жаргону**. Не «modify the API», а «додам поле X у таблицю Y і route Z». Не «UNION-query», а «обʼєднання 4 SELECT-ів через SQL UNION — повільніше за читання з однієї таблиці».
+Principle: an option label is **the skill's next action** («Accept», «Move to §11 OQ»), and an option description is **3-5 sentences on what technically happens** + **the trade-off in plain words, without jargon**. Not «modify the API» but «I'll add field X to table Y and route Z». Not «UNION-query» but «combining 4 SELECTs via SQL UNION — slower than reading from one table».
 
-Канонічний наскрізний приклад — **ADR-0001 «Зберігати урок як таблицю блоків різних типів»** (`content-storage-strategy`) з навчального LMS-проєкту: далі всі фрагменти цього файлу цитують саме його.
+The canonical end-to-end example is **ADR-0001 «Store a lesson as a table of blocks of different types»** (`content-storage-strategy`) from a teaching LMS project: every fragment of this file below quotes it.
 
-## Загальна форма
+## General shape
 
 The canonical question/option contract — junior-friendly, bilingual, label = next mechanical step, description = 3-5 sentences — lives in [`../../_shared/ask-style.md`](../../_shared/ask-style.md). Read that first. How Step 6 (Socratic batch loop) and Step 7 (critic resolution) phrase questions and options. The contract from [socratic-loop.md](./socratic-loop.md) and [critic-phase.md](./critic-phase.md) is normative; this file shows the **shape** of the dialogue so options *describe what the skill will do*, not just *what they're labelled*.
 
@@ -21,90 +21,90 @@ The canonical question/option contract — junior-friendly, bilingual, label = n
 
 All decision-types (Surface / UI-architecture / Strategic / Building-block / Crosscutting bundle / Quality scenario / Risk entry / Open-architectural-decision) share the same 4-state machine: `Approve` / `Edit` / `Save as Open Question` / `Drop`. `Cancel` and `Reject` are synonyms for `Drop`.
 
-## Target-surface decision (§4 — walked FIRST) — что саме будуємо
+## Target-surface decision (§4 — walked FIRST) — what exactly we build
 
-> **UA-коментар.** Це **перше** рішення §4 і headline-механізм скіла: *яку поверхню (surface) ми будуємо* — бекенд-сервіс, веб-фронт, мобайл, CLI, worker, library. Це `multiSelect` (можна обрати >1). Recommended-набір деривиться з PRD §1 «для кого» + §4 ролей. >1 поверхні майже завжди → ADR (мульти-модульне + незворотнє). На resolution skill пише `target_surfaces: [...]` у frontmatter SAD, і §5 малює один контейнер на кожну поверхню. → `../../_shared/surfaces.md`
+> **Note.** This is the **first** §4 decision and the skill's headline mechanism: *which surface we build* — backend service, web frontend, mobile, CLI, worker, library. It is `multiSelect` (more than one can be picked). The Recommended set is derived from PRD §1 «for whom» + the §4 roles. >1 surface almost always → ADR (multi-module + irreversible). On resolution the skill writes `target_surfaces: [...]` into the SAD frontmatter, and §5 draws one container per surface. → `../../_shared/surfaces.md`
 
 ```
 Question:
-  §4 — ЩО САМЕ будуємо для course-lesson-mvp? (можна обрати кілька)
-  КОНТЕКСТ: PRD §1 каже «methodist складає урок у браузері, learner читає урок у браузері». Тобто
-  є серверна частина (зберігання + контракт) і браузерний UI. Це рішення вирішується ПЕРШИМ у §4,
-  бо воно гейтить §5 (один C4-контейнер на поверхню) і всі наступні стадії (api-forge, тести, задачі).
-  ЧОМУ ВАЖЛИВО: >1 поверхні = мульти-модульна незворотня фіча → ADR; це також визначає, які
-  артефакти згенерують наступні скіли (UI-шар задач, фронтові рівні тестів, форму контракту).
-  Прочитай descriptions перед вибором.
+  §4 — WHAT EXACTLY do we build for course-lesson-mvp? (several can be picked)
+  CONTEXT: PRD §1 says «the methodist builds a lesson in the browser, the learner reads the lesson in the browser». So
+  there is a server part (storage + contract) and a browser UI. This decision is made FIRST in §4,
+  because it gates §5 (one C4 container per surface) and every later stage (api-forge, tests, tasks).
+  WHY IT MATTERS: >1 surface = a multi-module irreversible feature → ADR; it also decides which
+  artifacts the later skills generate (the UI task layer, frontend test tiers, the contract shape).
+  Read the descriptions before choosing.
 
 Options:  # multiSelect
   - label: "backend-service + web-frontend (Recommended) (→ spawn ADR)"
-    description: "Будуємо і бекенд-сервіс (володіє REST/JSON-контрактом + зберіганням), і веб-фронт (браузерний UI, що СПОЖИВАЄ контракт, не створює його). НАСЛІДОК: я пишу target_surfaces: [backend-service, web-frontend] у frontmatter; §5 малює ДВА контейнери (API + web/SPA); далі йде follow-on UI-architecture рішення (SSR / SPA / hybrid); api-forge згенерує OpenAPI, break-tasks додасть шар `ui`, plan-tests додасть component / visual-regression / e2e-through-UI рівні. Мульти-поверхня → спавню ADR на сам вибір."
-  - label: "backend-service only (→ можливо без ADR)"
-    description: "Тільки серверний сервіс із контрактом (HTTP/REST або події); UI вже існує окремо або не потрібен. НАСЛІДОК: target_surfaces: [backend-service]; §5 — один контейнер API; немає UI-шару задач і фронтових тестів. Одна поверхня → blast-radius зазвичай не спрацьовує на самому виборі."
+    description: "We build both a backend service (owns the REST/JSON contract + storage) and a web frontend (a browser UI that CONSUMES the contract, doesn't create it). NEXT: I write target_surfaces: [backend-service, web-frontend] into the frontmatter; §5 draws TWO containers (API + web/SPA); a follow-on UI-architecture decision comes next (SSR / SPA / hybrid); api-forge will generate OpenAPI, break-tasks will add the `ui` layer, plan-tests will add the component / visual-regression / e2e-through-UI tiers. Multiple surfaces → I spawn an ADR for the choice itself."
+  - label: "backend-service only (→ possibly no ADR)"
+    description: "Only a server-side service with a contract (HTTP/REST or events); the UI already exists separately or isn't needed. NEXT: target_surfaces: [backend-service]; §5 — one API container; no UI task layer and no frontend tests. One surface → the blast radius usually doesn't fire on the choice itself."
   - label: "Save as Open Question"
-    description: "Я приберу рішення про поверхні з §4 і додам рядок у §11: «Open architectural decision: target surfaces — Open question — owner: <ти введеш>, due: <ти введеш>». Без поверхонь §5 і всі наступні стадії заблоковані, тому owner+due обовʼязкові; без обох — Drop."
+    description: "I'll remove the surface decision from §4 and add a row to §11: «Open architectural decision: target surfaces — Open question — owner: <you type>, due: <you type>». Without surfaces §5 and every later stage are blocked, so owner+due are mandatory; without both — Drop."
   - label: "Drop and re-frame"
-    description: "Я викину поточний набір і запитаю ще раз з переформульованим (наприклад, додам mobile-app, якщо потрібен ще й застосунок). Це рішення обовʼязкове — другий Drop ескалюється у Save-as-OQ з owner=Architect."
+    description: "I'll discard the current set and ask again with a reworded one (e.g. I'll add mobile-app if an app is needed too). This decision is mandatory — a second Drop escalates to Save-as-OQ with owner=Architect."
 ```
 
 ## UI-architecture decision (§4 — one per declared UI surface)
 
-> **UA-коментар.** Йде ОДРАЗУ після Target-surface, по разу на кожну оголошену UI-поверхню (`web-frontend` / `mobile-app` / `desktop-app`). web → SSR / SPA / hybrid; mobile → native / cross-platform. Гейтиться як будь-яке §4 стратегічне рішення (часто → ADR). Тримаємо легким: НЕ малюємо component-tree / токени / екрани — UI **переюзає** наявний design system із `architecture-map.md` §Frontend. → `../../_shared/surfaces.md`
+> **Note.** Comes RIGHT AFTER Target-surface, once per declared UI surface (`web-frontend` / `mobile-app` / `desktop-app`). web → SSR / SPA / hybrid; mobile → native / cross-platform. Gated like any §4 strategic decision (often → ADR). Keep it light: do NOT draw a component tree / tokens / screens — the UI **reuses** the existing design system from `architecture-map.md` §Frontend. → `../../_shared/surfaces.md`
 
 ```
 Question:
-  §4 UI-architecture для web-frontend — як рендериться браузерний UI редактора уроку?
-  КОНТЕКСТ: methodist перетягує блоки на льоту (drag-and-drop), learner читає готову сторінку.
-  architecture-map.md §Frontend показує: у репо вже є React + design-system @org/ui (Button, Card,
-  Modal) + токени у tokens.css.
-  ЧОМУ ВАЖЛИВО: це незворотній вибір доставки (переписати SSR↔SPA пізніше = тижні). UI ПЕРЕЮЗАЄ
-  наявний design system — ми не малюємо новий.
-  Прочитай descriptions.
+  §4 UI-architecture for web-frontend — how is the browser UI of the lesson editor rendered?
+  CONTEXT: the methodist drags blocks on the fly (drag-and-drop), the learner reads a finished page.
+  architecture-map.md §Frontend shows: the repo already has React + the design system @org/ui (Button, Card,
+  Modal) + tokens in tokens.css.
+  WHY IT MATTERS: this is an irreversible delivery choice (rewriting SSR↔SPA later = weeks). The UI REUSES
+  the existing design system — we don't draw a new one.
+  Read the descriptions.
 
 Options:
-  - label: "SPA, що споживає API (Recommended) (→ spawn ADR)"
-    description: "Браузерний клієнт (React, наявний @org/ui) тримає стан редактора локально і б'є по REST-контракту бекенду. Перевпорядкування блоків — оптимістичне локальне, потім PATCH. ПЛЮСИ: миттєвий drag-and-drop без round-trip; чисте розділення UI/контракт. МІНУСИ: дублює трохи логіки валідації на клієнті; SEO-сторінка learner потребує окремого рендера. НАСЛІДОК: я спавню ADR з назвою 'spa-consuming-rest-api', §5 малює контейнер web/SPA поряд з API, екрани будуються з наявних @org/ui-компонентів + токенів (не нові), break-tasks додає шар `ui`."
+  - label: "SPA consuming the API (Recommended) (→ spawn ADR)"
+    description: "The browser client (React, the existing @org/ui) keeps the editor state locally and calls the backend's REST contract. Reordering blocks is optimistic and local, then a PATCH. PROS: instant drag-and-drop with no round-trip; a clean UI/contract split. CONS: duplicates a bit of validation logic on the client; the learner's SEO page needs a separate render. NEXT: I spawn an ADR named 'spa-consuming-rest-api', §5 draws a web/SPA container next to the API, screens are built from the existing @org/ui components + tokens (not new ones), break-tasks adds the `ui` layer."
   - label: "Server-rendered (SSR) (→ spawn ADR)"
-    description: "Сервер віддає готовий HTML, інтерактив — точково. ПЛЮСИ: проста сторінка learner, гарне SEO. МІНУСИ: drag-and-drop редактора потребує round-trip або острівців інтерактиву. НАСЛІДОК: я спавню ADR 'server-rendered-ui', §5 малює web-контейнер як частину деплою сервера."
+    description: "The server returns ready HTML, interactivity only where needed. PROS: a simple learner page, good SEO. CONS: the editor's drag-and-drop needs a round-trip or islands of interactivity. NEXT: I spawn ADR 'server-rendered-ui', §5 draws the web container as part of the server deployment."
   - label: "Save as Open Question"
-    description: "Я приберу UI-architecture з §4 і додам рядок у §11: «Open architectural decision: web UI-architecture — Open question — owner: Frontend Lead, due: <ти введеш>». Питаю owner+due далі."
+    description: "I'll remove the UI architecture from §4 and add a row to §11: «Open architectural decision: web UI-architecture — Open question — owner: Frontend Lead, due: <you type>». I ask for owner+due next."
   - label: "Drop and re-frame"
-    description: "Я викину набір і запитаю ще раз (наприклад, hybrid замість чистого SSR/SPA). Рішення обовʼязкове для оголошеної UI-поверхні — другий Drop ескалюється у Save-as-OQ."
+    description: "I'll discard the set and ask again (e.g. hybrid instead of pure SSR/SPA). The decision is mandatory for a declared UI surface — a second Drop escalates to Save-as-OQ."
 ```
 
-## Strategic decision (§4 Solution strategy) — канонічний приклад `course-lesson-mvp`
+## Strategic decision (§4 Solution strategy) — the canonical `course-lesson-mvp` example
 
-> **UA-коментар.** Це той самий приклад, який лекція 6.4 (Слайди 14-19) і beer-lms `adr/0001-content-storage-strategy.md` використовують як наскрізний. Питання реальне з функції `course-lesson-mvp` — «як зберігати урок зі змішаного контенту?». Зверни увагу: option label = наступна дія skill-у, не просто назва опції. Description — 3-5 речень з конкретикою (назви таблиць, ADR-номери), а не «modify the storage».
+> **Note.** This is the same example that lecture 6.4 (Slides 14-19) and beer-lms `adr/0001-content-storage-strategy.md` use end to end. The question is a real one from the `course-lesson-mvp` feature — «how do we store a lesson made of mixed content?». Notice: the option label = the skill's next action, not just the option's name. The description is 3-5 sentences with specifics (table names, ADR numbers), not «modify the storage».
 
 ```
 Question:
-  §4 Solution Strategy — Як зберігати урок з content_type=mixed (текст + медіа)?
-  Сценарій: methodist складає урок з блоків (текст / відео-вкладення / картинки),
-  натискає Опублікувати; учень потім читає; методист хоче переставляти блоки на льоту.
-  (Попередні рішення: §1 топ-3 якості — швидкість редагування, рендер сторінки учня;
-   §2 у стеку Postgres + S3 для медіа; §3 актори methodist, learner.)
+  §4 Solution Strategy — How do we store a lesson with content_type=mixed (text + media)?
+  Scenario: the methodist builds a lesson from blocks (text / video attachments / images),
+  presses Publish; the learner then reads it; the methodist wants to reorder blocks on the fly.
+  (Earlier decisions: §1 top-3 qualities — editing speed, rendering the learner's page;
+   §2 the stack has Postgres + S3 for media; §3 actors methodist, learner.)
 
-  ВАЖЛИВО: blast-radius 3/3 — рішення незворотнє (методисти наповнять десятки уроків →
-  міграція з простоєм), зачіпає 3 модулі (фронт-редактор / бек-API / медіа-обробник),
-  є чесні альтернативи. Очікувано → спавн ADR.
+  IMPORTANT: blast-radius 3/3 — the decision is irreversible (methodists will fill dozens of lessons →
+  a migration with downtime), it touches 3 modules (frontend editor / backend API / media processor),
+  and there are honest alternatives. Expected → spawn an ADR.
 
 Options:
-  - label: "Таблиця блоків різних типів + окрема таблиця медіа (Recommended) (→ spawn ADR-0001)"
-    description: "Дві нові таблиці: lesson_blocks (id, lesson_id, sequence INT, type, content) і media_blobs (id, s3_url, mime, …). Колонка sequence зберігає порядок. ПЛЮСИ: NFR p95 ≤500 мс на редагування виконується природно — UPDATE один рядок (не цілий документ); перевпорядкування — одна транзакція з кількома UPDATE на sequence. МІНУСИ: дві нові таблиці у міграції; UNIQUE(lesson_id, sequence) потребує окремого ADR-сусіда. НАСЛІДОК: я спавню ADR-0001 з назвою 'content-storage-strategy', додаю рядок у §9 ADR-table, схема фіксується для `sdlc:generate-data-model`."
-  - label: "Один цілісний JSON-обʼєкт у S3, метадані у БД (→ spawn ADR-0001)"
-    description: "Фронт-редактор серіалізує цілий урок у JSON, кладе у S3 як lessons/{id}.json; у БД зберігається тільки lesson_id → s3_key + updated_at. ПЛЮСИ: одна БД-таблиця замість двох; додавання нового типу блоку не потребує schema-migration. МІНУСИ: при перетягуванні одного блоку фронт відправляє цілий урок ≈100 КБ; NFR p95 ≤500 мс під ризиком на великих уроках; повнотекстовий пошук всередині уроку неможливий. НАСЛІДОК: я спавню ADR-0001 з опцією 'json-blob-in-s3', додаю рядок у §9, схема для `sdlc:generate-data-model` — тільки lessons-метадані."
-  - label: "Дві окремі сутності text_blocks + media_blocks, JOIN на API-рівні (→ spawn ADR-0001)"
-    description: "Чисте розділення за типом контенту. API при GET /lessons/{id} робить два запити (SELECT з text_blocks і media_blocks) і зливає результат за sequence. ПЛЮСИ: чисті межі сутностей. МІНУСИ: 'mixed content' стає діравою абстракцією, бо клієнт зшиває дві окремі форми у одну; зайвий JOIN на кожен read; нові типи блоків (poll, code) потребуватимуть нових таблиць. НАСЛІДОК: я спавню ADR-0001 з опцією 'two-entities-join', додаю рядок у §9."
+  - label: "A table of blocks of different types + a separate media table (Recommended) (→ spawn ADR-0001)"
+    description: "Two new tables: lesson_blocks (id, lesson_id, sequence INT, type, content) and media_blobs (id, s3_url, mime, …). The sequence column stores the order. PROS: the NFR p95 ≤500 ms per edit is met naturally — UPDATE one row (not a whole document); reordering is one transaction with a few UPDATEs on sequence. CONS: two new tables in the migration; UNIQUE(lesson_id, sequence) needs a separate neighbouring ADR. NEXT: I spawn ADR-0001 named 'content-storage-strategy', add a row to the §9 ADR table, the schema is locked for `sdlc:generate-data-model`."
+  - label: "One whole JSON object in S3, metadata in the DB (→ spawn ADR-0001)"
+    description: "The frontend editor serializes the whole lesson to JSON and puts it in S3 as lessons/{id}.json; the DB stores only lesson_id → s3_key + updated_at. PROS: one DB table instead of two; adding a new block type needs no schema migration. CONS: dragging one block makes the frontend send the whole lesson ≈100 KB; the NFR p95 ≤500 ms is at risk on large lessons; full-text search inside a lesson is impossible. NEXT: I spawn ADR-0001 with the option 'json-blob-in-s3', add a row to §9, the schema for `sdlc:generate-data-model` is lessons metadata only."
+  - label: "Two separate entities text_blocks + media_blocks, JOIN at the API level (→ spawn ADR-0001)"
+    description: "A clean split by content type. On GET /lessons/{id} the API makes two queries (SELECT from text_blocks and media_blocks) and merges the result by sequence. PROS: clean entity boundaries. CONS: 'mixed content' becomes a leaky abstraction, because the client stitches two separate shapes into one; an extra JOIN on every read; new block types (poll, code) will need new tables. NEXT: I spawn ADR-0001 with the option 'two-entities-join', add a row to §9."
   - label: "Save as Open Question"
-    description: "Я приберу це рішення з §4 і додам рядок у §11 Risks: «Open architectural decision: content storage strategy — Open question — Resolve before `sdlc:generate-data-model` — owner: <ти введеш>». Далі я попрошу тебе ввести owner + due одним рядком. Без обох — рішення стає Drop."
+    description: "I'll remove this decision from §4 and add a row to §11 Risks: «Open architectural decision: content storage strategy — Open question — Resolve before `sdlc:generate-data-model` — owner: <you type>». Next I'll ask you to enter owner + due in one line. Without both, the decision becomes Drop."
   - label: "Drop and re-frame"
-    description: "Я викину поточний набір опцій і запитаю ще раз з переформульованим набором (наприклад, тільки структуровані варіанти, якщо ти відкинув JSON-blob). Використовуй, якщо у наборі опцій не вистачає важливого виміру."
+    description: "I'll discard the current set of options and ask again with a reworded set (e.g. only structured options, if you rejected the JSON blob). Use it if the option set is missing an important dimension."
 ```
 
-**Що тут не junior-friendly у старій версії і як спростили:**
+**What was not junior-friendly in the old version and how it was simplified:**
 
-- Раніше було абстрактне «module-to-module integration» — тепер конкретна функція з конкретним сценарієм (methodist складає урок).
-- Раніше option label = «Async via outbox events» — тепер «Таблиця блоків різних типів + окрема таблиця медіа (→ spawn ADR-0001)» з явною технічною формою і назвою ADR.
-- Раніше description = одне речення з англо-жаргоном — тепер 3-5 речень з ПЛЮСИ / МІНУСИ / НАСЛІДОК і конкретними числами (p95, ≈100 КБ, кількість таблиць).
+- It used to be an abstract «module-to-module integration» — now it is a concrete feature with a concrete scenario (the methodist builds a lesson).
+- The option label used to be «Async via outbox events» — now «A table of blocks of different types + a separate media table (→ spawn ADR-0001)» with an explicit technical shape and the ADR name.
+- The description used to be one sentence of jargon — now 3-5 sentences with PROS / CONS / NEXT and concrete numbers (p95, ≈100 KB, number of tables).
 
 After `Save as Open Question`, the follow-up `AskUserQuestion`:
 
@@ -270,50 +270,50 @@ Options:
     description: "Skill removes decision. If mandatory, re-asks with reframed options once; if optional, leaves it out."
 ```
 
-## Junior-friendly Ukrainian explanations (mandatory from 2026-05-23)
+## Junior-friendly explanations in the user's language (mandatory from 2026-05-23)
 
-Every `AskUserQuestion` у цьому skill-у формулюється так, щоб **junior-розробник першого року** міг зрозуміти суть рішення, різницю між опціями і наслідки кожної — без помічника поряд. Старий шаблон («1-line WHY», 5-word labels) deprecated для Step 6 + Step 7.
+Every `AskUserQuestion` in this skill is worded so that **a first-year junior developer** can understand the substance of the decision, the difference between the options and the consequences of each — without a helper next to them. The old template («1-line WHY», 5-word labels) is deprecated for Step 6 + Step 7.
 
 ### Mandatory shape
 
-1. **Українська мова всюди** — labels + descriptions. Технічні ідентифікатори (ADR, JSONB, JWT, UUID, FK, GIN) залишаються англійською — це назви; але «дії» опцій — українською («Прийняти», «Відредагувати», «Перенести у §11 OQ», «Видалити»).
+1. **Ask in the user's language** — per [`../../_shared/ask-style.md`](../../_shared/ask-style.md) → *Language*: the question, labels and descriptions follow the language the user converses in (the session's configured response language, else the user's own recent messages), never the language of the examples here. Technical identifiers (ADR, JSONB, JWT, UUID, FK, GIN) stay as they are — they are names; the option *actions* are translated like the rest.
 
-2. **`question` поле — 3-4 речення** з трьох блоків:
-   - **КОНТЕКСТ** — чому це питання, який сценарій уявляти, що саме ми вирішуємо (в одному реченні з прикладом)
-   - **ЧОМУ ВАЖЛИВО** — який QG / NFR / PRD-вектор зачіпає; blast-radius (irreversible? multi-module? впливає на performance / security / UX?); основний trade-off у грі
-   - **ОПЦІЇ НИЖЧЕ** — підказка прочитати descriptions перед вибором
+2. **`question` field — 3-4 sentences** in three blocks:
+   - **CONTEXT** — why this question, what scenario to picture, what exactly we are deciding (in one sentence with an example)
+   - **WHY IT MATTERS** — which QG / NFR / PRD vector it touches; blast radius (irreversible? multi-module? affects performance / security / UX?); the main trade-off in play
+   - **OPTIONS BELOW** — a nudge to read the descriptions before choosing
 
-3. **Option `description` — 3-5 речень** із чотирьох обов'язкових елементів:
-   - **Що технічно станеться**: конкретні назви таблиць / endpoint-ів / файлів / ADR-номерів. Не «modify the API», а «додам поле `is_methodist BOOLEAN` у таблицю `org_members` і новий route `POST /courses` у `internal/modules/course/ports/handler.go`».
-   - **Що дістаємо / що втрачаємо** — trade-off простими словами, без жаргону:
-     - Не «backfill-migration» → «скрипт, який пробігає всі існуючі записи у таблиці і дописує нові поля; під час прогону DB читається, але запис у ці рядки блокований»
-     - Не «UNION-query» → «об'єднання 4 окремих SELECT-ів в один результат через SQL UNION — повільніше, ніж читання з однієї таблиці»
-     - Не «GIN indexing» → «спеціальний тип індексу Postgres, який дозволяє шукати всередині JSON-полів, але займає у 3-5× більше місця і повільніше пишеться»
-     - Не «cursor pagination» → «передача останнього бачаного ID клієнту, щоб наступна сторінка починалася з нього; уникає `OFFSET`, який сповільнюється на великих сторінках»
-   - **Наступний механічний крок skill-у**: «я спавню ADR-NNNN з назвою X, додаю рядок у §9 ADR-table, схема фіксується для `sdlc:generate-data-model`»
-   - **Hidden trade-off** — якщо є умова, при якій рішення зривається («це працює тільки якщо у вас вже Redis у стеку», «через 6 місяців у вас буде downtime для backfill», «UX змінюється для existing users і їм треба буде релогінитися») — згадати її **прямо у description**, а не у follow-up. Junior не побачить цього тригера сам.
+3. **Option `description` — 3-5 sentences** with four mandatory elements:
+   - **What technically happens**: concrete names of tables / endpoints / files / ADR numbers. Not «modify the API» but «I'll add the field `is_methodist BOOLEAN` to the `org_members` table and a new route `POST /courses` in `internal/modules/course/ports/handler.go`».
+   - **What we gain / what we lose** — the trade-off in plain words, without jargon:
+     - Not «backfill-migration» → «a script that walks every existing row in the table and fills in the new fields; while it runs the DB is readable, but writes to those rows are blocked»
+     - Not «UNION-query» → «combining 4 separate SELECTs into one result via SQL UNION — slower than reading from one table»
+     - Not «GIN indexing» → «a special Postgres index type that lets you search inside JSON fields, but takes 3-5× more space and writes slower»
+     - Not «cursor pagination» → «sending the client the last ID it saw, so the next page starts from it; avoids `OFFSET`, which slows down on large pages»
+   - **The skill's next mechanical step**: «I spawn ADR-NNNN named X, add a row to the §9 ADR table, the schema is locked for `sdlc:generate-data-model`»
+   - **Hidden trade-off** — if there is a condition under which the decision breaks («this only works if you already have Redis in the stack», «in 6 months you'll need downtime for a backfill», «UX changes for existing users and they'll have to log in again») — state it **right in the description**, not in a follow-up. A junior won't see that trigger on their own.
 
-### Заборонено
+### Forbidden
 
-- Стислі англомовні labels («Approve», «Edit», «Drop», «Reword»)
-- Однорядкові descriptions
-- Технічні терміни без розшифровки (UNION, backfill, GIN, cursor, idempotent, transactional, etc.)
-- Trade-off-и, заховані у follow-up («якщо вибрав це — потім спитаю про X, а він має складність Y»)
+- Terse labels («Approve», «Edit», «Drop», «Reword») — in any language
+- One-line descriptions
+- Technical terms without a gloss (UNION, backfill, GIN, cursor, idempotent, transactional, etc.)
+- Trade-offs hidden in a follow-up («if you pick this I'll later ask about X, and it has complexity Y»)
 
-### Контр-приклад (deprecated shape)
+### Counter-example (deprecated shape)
 
 ```
 - label: "Approve"
   description: "Apply decision."
 ```
 
-### Правильно (mandatory shape)
+### Correct (mandatory shape)
 
 ```
-- label: "Прийняти JSONB-колонку (→ spawn ADR-0002)"
-  description: "Одна колонка lessons.body типу jsonb, яка зберігає весь масив блоків як JSON: [{type:\"text\",content:\"...\"},{type:\"video_embed\",url:\"...\"}]. ПЛЮСИ: atomic-редагування lesson одним UPDATE; додавання нового типу блоку у v2 не потребує schema-migration (зміна тільки в app-валідаторі). МІНУСИ: валідація блоків явно у app-layer (DB не знає про типи); повнотекстовий пошук всередині body вимагає GIN-індексу (спеціальний тип індексу Postgres для пошуку всередині JSON, у 3-5× більше місця і повільніше при записі). НАСЛІДОК: я спавню ADR-0002 з розписом 3 розглянутих варіантів, додаю рядок у §9 ADR-table, схема «jsonb NOT NULL DEFAULT '[]'::jsonb» зафіксована як contract для `sdlc:generate-data-model`."
+- label: "Accept the JSONB column (→ spawn ADR-0002)"
+  description: "One lessons.body column of type jsonb that stores the whole array of blocks as JSON: [{type:\"text\",content:\"...\"},{type:\"video_embed\",url:\"...\"}]. PROS: atomic editing of a lesson with one UPDATE; adding a new block type in v2 needs no schema migration (only the app validator changes). CONS: block validation lives explicitly in the app layer (the DB doesn't know the types); full-text search inside body needs a GIN index (a special Postgres index type for searching inside JSON, 3-5× more space and slower writes). NEXT: I spawn ADR-0002 with the 3 options considered, add a row to the §9 ADR table, the schema «jsonb NOT NULL DEFAULT '[]'::jsonb» is locked as the contract for `sdlc:generate-data-model`."
 ```
 
 ### Why
 
-Користувач — PM, methodist або junior dev, який вперше відкриває репозиторій. Стислі англомовні питання не дають йому ні суті рішення, ні різниці між опціями. Це зриває Socratic-cadence і робить skill придатним лише для senior-ів з повним контекстом. Дослівна цитата фідбеку 2026-05-23: «Треба щоб пояснення були ще більш зрозумілими для людей котрі буквально джуни в розробці».
+The user is a PM, methodist or junior dev opening the repository for the first time. Terse questions give them neither the substance of the decision nor the difference between the options. That breaks the Socratic cadence and makes the skill usable only by seniors with full context. Feedback from 2026-05-23 (translated): «the explanations must be even clearer, for people who are literally juniors in development».

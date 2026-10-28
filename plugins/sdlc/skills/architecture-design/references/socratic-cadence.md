@@ -1,14 +1,14 @@
 # Socratic cadence — how to walk 12 sections without exhausting the user
 
-## TL;DR (короткий вступ українською)
+## TL;DR (short intro)
 
-Три правила, щоб користувач не втомився від 30 питань підряд:
+Three rules so the user doesn't tire from 30 questions in a row:
 
-1. **Одне питання на невизначеність, не на параметр.** Якщо CLAUDE.md уже фіксує defaults (slog, JSON, info) — одне питання «Override defaults?», а не три окремі.
-2. **Recommended першою опцією + 1 рядок ЧОМУ у description.** Не пиши довгу лекцію у самому питанні — користувач читає опції.
-3. **Mini-recap кожні 5 питань.** Після 5 рішень — короткий список «що вже вирішили», щоб користувач бачив прогрес і ловив розбіжності одразу.
+1. **One question per uncertainty, not per parameter.** If CLAUDE.md already fixes defaults (slog, JSON, info) — one question «Override defaults?», not three separate ones.
+2. **Recommended as the first option + 1 line of WHY in the description.** Don't write a long lecture in the question itself — the user reads the options.
+3. **Mini-recap every 5 questions.** After 5 decisions — a short list of «what we have decided», so the user sees progress and catches mismatches right away.
 
-**Цільовий бюджет:** 8-20 питань на весь walk. Понад 25 — зона втоми.
+**Target budget:** 8-20 questions for the whole walk. Over 25 is the fatigue zone.
 
 ---
 
