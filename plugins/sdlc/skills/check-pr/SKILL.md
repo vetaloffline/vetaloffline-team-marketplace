@@ -166,8 +166,10 @@ the required ones.
    1. **Read the log.** Find the first real error, not the last line (`ERROR: Job failed: exit code 1`
       is only the summary).
    2. **Find the root cause** and say it in one sentence with the evidence (the log line,
-      `file:line`). If it is one of the [ask cases](#ask-when-it-is-not-clear) → stop and return
-      `PRFIX_NEEDS_USER`. Do not guess.
+      `file:line`). Looks flaky or infra-caused and this check was not re-run yet → re-run it once
+      (the *Re-run one check* command) and go back to step 2 — no question. Any other
+      [ask case](#ask-when-it-is-not-clear), or the same flaky error after that re-run → stop and
+      return `PRFIX_NEEDS_USER`. Do not guess.
    3. **Reproduce locally** where you can: the same command or the same test the job ran.
    4. **Fix it on the PR's feature branch**, in the repo that owns the failing code. Production code
       or a broken fixture/setup — never by making a test assert less.
@@ -192,7 +194,7 @@ these cases:
 | Case | How it looks | What to offer |
 |---|---|---|
 | **The cause is in another repo, or in merge/deploy order** | The job checks out or calls another repo's default branch, which does not have this feature yet. Real case: the app MR's `e2e` job cloned the api repo's `main`, so the new family specs failed until the api MR was merged. | «You merge the api MR first; I re-run the job (`glab ci retry` / `gh run rerun`) and read the checks again» · «Leave it red; I write the merge order into both PR bodies». Never change the job to point at the feature branch without asking — that is a CI-config change. |
-| **Flaky test or infra/runner failure** | Runner lost, out of disk, network/registry timeout, image pull failed; the test passes locally on the same SHA; the failure moves between runs. | «Re-run the job once» · «Treat it as a real failure and investigate». No silent retry loops. |
+| **Flaky test or infra/runner failure — after one automatic re-run** | Runner lost, out of disk, network/registry timeout, image pull failed; the test passes locally on the same SHA; the failure moves between runs. **The first time the agent does not ask:** it re-runs that job once itself (`gh run rerun <run-id> --failed` / `glab ci retry <job-id>`) and reads the checks again. Only when the same error comes back after that re-run does it become a question. | «Treat it as a real failure and investigate» · «Re-run once more» · «Leave it red; you look at the runner». No more than one automatic re-run per check. |
 | **The fix would change the PRD, an AC or the contract** | The test is right about the code but the AC/OpenAPI says something else, or the AC turns out to be wrong. | Stop. That is a `/sdlc:clarify-prd` or `/sdlc:api-forge` change with the user in the loop, not a CI fix. |
 | **The fix would weaken a test** | The only way to green is to loosen an assertion, skip/delete a test, raise a timeout to hide slowness, or mark the job `allow_failure` / `continue-on-error`. | Do not do it. Show the conflict (the assertion, the AC) and ask what is wrong — the code, the test or the AC. |
 | **The fix needs secrets or CI settings** | A missing CI variable or secret, a protected-branch or runner setting, a token scope, a change to `.gitlab-ci.yml` / `.github/workflows/` that is not part of the feature. | Name exactly what is missing and where it is set; the user changes it. Never put a secret in the repo or a commit. |
@@ -244,8 +246,9 @@ the check and why).
   `xfail`, `allow_failure` / `continue-on-error`, `[skip ci]`, turning a job off — never. If the test
   looks wrong, ask.
 - **Guessing when the cause is not in this branch.** A job that runs against another repo's default
-  branch, a merge/deploy order dependency, a flaky runner, a missing secret — ask; don't patch around
-  it or retry in a loop.
+  branch, a merge/deploy order dependency, a missing secret — ask; don't patch around it.
+- **Asking about a one-off flake, or retrying in a loop.** A failure that looks flaky or infra-caused
+  gets exactly one automatic re-run; the same error again → ask. Never a second silent re-run.
 - **Fixing only the check you looked at.** Every push starts a new pipeline; read all checks again.
 - **Guessing another forge's commands.** Bitbucket, Gitea, Azure DevOps… are not `gh` / `glab`; ask
   how to read their checks instead of writing CLI/API calls from memory.
