@@ -1,6 +1,6 @@
 # sdlc — a fork in the vetaloffline-team marketplace
 
-Fork of [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (commit `27cadcb`), version `0.0.5`.
+Fork of [genkovich/sdlc](https://github.com/genkovich/sdlc) 4.6.2 (commit `27cadcb`), version `0.0.6`.
 MIT license, the author's copyright is in [LICENSE](LICENSE). The plugin name (`sdlc`), agents (`sdlc:<agent>`)
 and defaults are as in the original.
 
