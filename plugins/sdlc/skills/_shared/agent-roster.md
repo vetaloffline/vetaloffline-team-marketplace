@@ -15,6 +15,7 @@ Model is chosen by the **kind of work**, not by taste — judgment gets the stro
 | `implementer` | green (execution) | `sonnet` | `medium` → `high` on escalation | + Write, Edit |
 | `refactor` | tidy while green (execution) | `sonnet` | `medium` → `high` on escalation | + Write, Edit |
 | `doc-flow` | walk one user flow + write its doc (execution) | `sonnet` | `medium` | + Bash, Write, Edit |
+| `pr-fixer` | drive one PR's checks to green: read logs, fix, push, repeat (execution) | `sonnet` | `medium` | + Bash, Write, Edit |
 | `reviewer` | independent review (judgment) | `opus` | `high` | Read, Grep, Glob, Bash |
 | `critic` | coherence critique (judgment) | `opus` | `high` | Read, Grep, Glob |
 | `devils-advocate` | ambiguity hunt (judgment) | `opus` | `high` | Read, Grep, Glob |
@@ -28,7 +29,7 @@ Rationale: judgment quality (review, critique, ambiguity, strategy, multi-perspe
 
 These agents are **plugin-namespaced**. Spawn each with `subagent_type: "sdlc:<name>"` — the id Claude Code registers and shows in the available-agents list — **not** the bare name and **not** an `sdlc-…` prefix:
 
-`sdlc:explorer` · `sdlc:test-author` · `sdlc:implementer` · `sdlc:refactor` · `sdlc:reviewer` · `sdlc:critic` · `sdlc:devils-advocate` · `sdlc:researcher` · `sdlc:strategist` · `sdlc:analyst` · `sdlc:doc-flow`
+`sdlc:explorer` · `sdlc:test-author` · `sdlc:implementer` · `sdlc:refactor` · `sdlc:reviewer` · `sdlc:critic` · `sdlc:devils-advocate` · `sdlc:researcher` · `sdlc:strategist` · `sdlc:analyst` · `sdlc:doc-flow` · `sdlc:pr-fixer`
 
 So when a skill says «dispatch the `explorer` agent», the call is `subagent_type: "sdlc:explorer"`. If the namespaced agent isn't available at runtime, fall back to the general-purpose (or `Explore`) agent the skill names, passing the same prompt.
 
