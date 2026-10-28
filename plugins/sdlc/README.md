@@ -58,7 +58,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 
 ## Skill order — full backbone (12 stages)
 
-> Each stage reads the previous stage's artefacts. The `map-architecture` scan happens **once** at the start; later stages read `docs/architecture-map.md` instead of re-scanning. Cross-cutting utilities (`fix-term`, `classify-size`, `decide-adr`, `roadmap`, `prepare-design-spec`, `verify-ui`) are called ad-hoc, not in sequence.
+> Each stage reads the previous stage's artefacts. The `map-architecture` scan happens **once** at the start; later stages read `docs/architecture-map.md` instead of re-scanning. Cross-cutting utilities (`fix-term`, `classify-size`, `decide-adr`, `roadmap`, `prepare-design-spec`, `verify-ui`) are called ad-hoc, not in sequence — except `verify-ui`, which `implement-tasks` also offers after a run that touched UI (the user chooses: browser check or straight to review).
 
 | Stage | Skill | Command | Output |
 |------:|-------|---------|--------|
@@ -71,7 +71,7 @@ Verify: `claude /plugin list` shows `sdlc`; `/sdlc:interview` (or any other slas
 | 10 | [`api-forge`](skills/api-forge/SKILL.md) | `/sdlc:api-forge` | `docs/features/<slug>/contracts/openapi.yaml` (+ events.md / cli.md / public-api.md per surface) + `api-sync-report.md` (`**Verdict:**` PASS / PASS (with deferrals) / FAIL, 5-point drift checklist); bootstraps `.claude/rules/openapi.md` on the first HTTP run |
 | 13 | [`break-tasks`](skills/break-tasks/SKILL.md) | `/sdlc:break-tasks` | `docs/features/<slug>/tasks/_epic.md` + `tracker.md` + `<task>.md` + **`tasks/tasks.json`** (machine DAG) |
 | 15 | [`plan-tests`](skills/plan-tests/SKILL.md) | `/sdlc:plan-tests` | `docs/features/<slug>/test-plan.md` (surface-gated tiers; generic, no hardcoded tools) |
-| 17 | [`implement-tasks`](skills/implement-tasks/SKILL.md) | `/sdlc:implement-tasks` | committed TDD code + tests + updated `tracker.md`; promotes staged migrations |
+| 17 | [`implement-tasks`](skills/implement-tasks/SKILL.md) | `/sdlc:implement-tasks` | committed TDD code + tests + updated `tracker.md`; promotes staged migrations; after UI changes asks whether to run `verify-ui` |
 | 17 | [`review-feature`](skills/review-feature/SKILL.md) 🚪 | `/sdlc:review-feature` | `docs/features/<slug>/_review/review-<date>.md` (PASS / CHANGES REQUESTED) |
 | 18 | [`ship-feature`](skills/ship-feature/SKILL.md) 🚪 | `/sdlc:ship-feature` | `CHANGELOG.md` + PR body; moves feature to `docs/roadmap.md` Shipped |
 

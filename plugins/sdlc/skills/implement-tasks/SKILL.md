@@ -11,7 +11,8 @@ description: >
   "напиши код за задачами {slug}". Reads docs/features/{slug}/tasks/tasks.json + the upstream
   artifacts, detects the repo's test/lint/vet commands stack-agnostically, builds a dependency
   DAG, and runs one of three modes — sequential single-agent TDD, an agent team (TeamCreate), or
-  a dynamic Workflow — chosen from settings + DAG shape with graceful fallback. Output: committed,
+  a dynamic Workflow — chosen from settings + DAG shape with graceful fallback. When the run touched
+  UI it asks the user whether to check it in the browser with verify-ui before review. Output: committed,
   tested code + updated tasks/tracker.md. Hard-refuses if docs/features/{slug}/tasks/tasks.json is
   missing (the legacy docs/features/{slug}/tasks.json is accepted as a fallback) → run
   `/sdlc:break-tasks {slug}` first.
@@ -49,7 +50,11 @@ Tech Lead drives; the engine runs the cycle. Four subagents ship with the plugin
 7. **Banner.** Print the active mode and the settings that drove it: `mode=<…> tdd=<…> isolation=<…> parallel=<n> integration=<…>` (+ one line per owning repo — branch + resolved commands — in a nested-repo workspace). The user sees exactly how the engine will behave before it acts.
 8. **Execute** in the chosen mode. Every task runs the TDD cycle → [`./references/tdd-loop.md`](./references/tdd-loop.md). A `layer: migration` task first **promotes** its staged migration(s) (`docs/features/<slug>/migrations/<NN>_*`, in whatever format they were staged — `.up.sql` / `.down.sql` or the project's own per `.claude/rules/migrations.md`) into the live migrations tree (in the owning repo) — assigning the real sequence number / timestamp per the repo's convention, in ordinal order — *then* applies + reverts them; detail → [`./references/inputs.md`](./references/inputs.md).
 9. **Per-task gate + commit.** RED runs in `sdlc:test-author`, GREEN in `sdlc:implementer`, REFACTOR in the isolated `sdlc:refactor` agent. After GREEN+REFACTOR the **engine** runs the gate — unit + (integration if available) + lint + vet must be clean — then commits task-scoped with trailers `SDLC-Task: <id>` and `SDLC-AC: <id>` (one per satisfied AC) — in the task's owning repo (`git -C <repo>`), one commit per repo with the same trailers when a task spans two. GATE + COMMIT are the engine's, not any agent's. Update `tasks/tracker.md` → `done` (in the docs repo — never inside a code-repo commit).
-10. **Summary + hand off.** Report covered AC, commits made (with `SDLC-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (covered AC, commits with `SDLC-Task` trailers, gate results) + *Review* (the committed diff — per repo in a nested-repo workspace — + `tasks/tracker.md`) + *Run next* (`/clear`, then `/sdlc:review-feature <slug>` — a clean-context pass over the whole diff), then `/sdlc:ship-feature <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review-feature` skill — `implement-tasks` does not self-certify.
+10. **UI verification choice — only when the run touched UI.** The run touched UI when at least one committed task has `layer: ui`, or `sad.md` frontmatter `target_surfaces` declares a UI surface (`web-frontend` / `mobile-app` / `desktop-app`) and a committed task changed files of that surface. A backend-only run asks nothing here: say `UI verification: not applicable (no UI changes)` in the summary and go to step 11. Otherwise ask **one** `AskUserQuestion` (phrased per [`../_shared/ask-style.md`](../_shared/ask-style.md)) — the user decides, never the engine:
+    - **«Check it in the browser with `verify-ui` (Recommended)»** — run the [`verify-ui`](../verify-ui/SKILL.md) protocol now, in this session, over every AC of the UI tasks and every UI flow they touch (desktop and mobile viewport, a screenshot per AC). A FAIL sends its task back through the TDD cycle (step 8–9: fix, gate, commit), then the failed ACs are verified again; all PASS → step 11. If the session has no browser tools or they cannot connect, **stop and wait** for the user to fix it — do not hand off, do not report the UI as verified.
+    - **«Not needed — go to review»** — skip the browser check. Write `docs/features/<slug>/_review/verify-ui.md` with one line: `UI verification skipped by the user, <date>`, so `review-feature` sees it was a decision, not an omission.
+    The question names the UI tasks and the ACs they cover, so the user knows what would be clicked through.
+11. **Summary + hand off.** Report covered AC, commits made (with `SDLC-Task` trailers), any task dropped/blocked, and the per-task gate results. Then **emit the stage-handoff block** per [`../_shared/handoff.md`](../_shared/handoff.md) — *What I did* (covered AC, commits with `SDLC-Task` trailers, gate results, the UI verification outcome — verified / skipped by the user / not applicable) + *Review* (the committed diff — per repo in a nested-repo workspace — + `tasks/tracker.md`) + *Run next* (`/clear`, then `/sdlc:review-feature <slug>` — a clean-context pass over the whole diff), then `/sdlc:ship-feature <slug>`. In team mode the [`reviewer`](../../agents/reviewer.md) may also run per-task, but the authoritative independent review of the whole change lives in the `review-feature` skill — `implement-tasks` does not self-certify.
 
 ## Decision tree (compact)
 
@@ -73,6 +78,7 @@ else:                                                        → SEQUENTIAL sing
 - Every task in `docs/features/<slug>/tasks/tasks.json` is either committed (test-first, gate-clean, `SDLC-Task`/`SDLC-AC` trailers) or explicitly reported as dropped/blocked with the reason.
 - Unit gate green; integration green where available (or NON-red recorded with the policy reason); lint + vet clean per the detected commands.
 - The active mode + settings were printed in the banner before execution.
+- When the run touched UI, the user was asked whether to verify it in the browser with `verify-ui`, and the outcome is recorded (`_review/verify-ui.md` with the verdicts, or the skipped-by-the-user line). A backend-only run asks nothing.
 - `tasks/tracker.md` reflects final status; the summary reports the gate results and hands off to `review-feature` (the independent review gate) — `implement-tasks` does not self-certify the whole change.
 
 ## Anti-patterns
@@ -84,6 +90,8 @@ else:                                                        → SEQUENTIAL sing
 - **Committing with a red or skipped gate** and calling it done. A NON-red integration tier must be labelled, not hidden.
 - **Spawning a team for <4 tasks** — coordination overhead exceeds the gain; the eligibility check forbids it.
 - **Claiming integration passed when Docker was absent.** Report NON-red honestly.
+- **Deciding the UI check for the user** — skipping the step-10 question when UI changed, or running it on a backend-only run. Agent-written E2E specs are not a reason to skip the question.
+- **Calling the UI verified without a browser** — no browser tools, or they cannot connect → stop and wait; never substitute tests for the click-through.
 - **Committing into the wrong repo** in a nested-repo workspace — code into the docs repo, or `tracker.md` into a code repo. Each change goes to the repo that owns it.
 
 ## References & template
