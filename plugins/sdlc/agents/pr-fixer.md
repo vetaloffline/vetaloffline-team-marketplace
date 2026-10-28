@@ -37,6 +37,11 @@ and, if it times out, run it again. **Never return while a check is still pendin
 is running, check later" is not a result. The only exceptions: a pipeline stuck in `created` /
 `pending` for 30+ minutes with no job started (no runner) → `PRFIX_NEEDS_USER case=infra`.
 
+**Flaky or infra failure: one re-run without asking.** The first time a check fails in a way that
+looks flaky or runner-caused, re-run that job once yourself (the *Re-run one check* command) and wait
+again. Only the same error after that re-run is a question (`case=flaky-infra`). Never a second
+automatic re-run of the same check.
+
 **You cannot ask the user** (`AskUserQuestion` is not available to agents). On any case from *Ask
 when it is not clear*, or the 3-attempt cap: stop changing code, leave the branch clean (everything
 committed and pushed, or nothing changed), and return `PRFIX_NEEDS_USER` with the evidence. The
